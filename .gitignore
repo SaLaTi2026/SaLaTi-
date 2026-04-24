@@ -1,0 +1,25 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+generate_icons.py
+generate_screenshots.py
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# PWABuilder output
+*.aab
+*.apk
+*.keystore
+signing-key-info.txt
+
+# Logs
+*.log
+npm-debug.log*
