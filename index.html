@@ -353,4 +353,99 @@
     }
   </script>
 </body>
+<!-- PATCH FIXES -->
+<script>
+// Fix 1: Arabic months everywhere
+const HIJRI_MONTHS_AR_FIX = ['محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'];
+
+// Override renderHijriToday
+const originalRenderHijri = window.renderHijriToday;
+window.renderHijriToday = function() {
+  const today = new Date();
+  const h = gregorianToHijri(today);
+  state.hijriToday = h;
+  
+  const monthName = state.lang === 'ar' ? HIJRI_MONTHS_AR_FIX[h.month - 1] : HIJRI_MONTHS[h.month - 1];
+  document.getElementById('hijriDate').textContent = `${h.day} ${monthName} ${h.year}`;
+  
+  const greg = today.toLocaleDateString(state.lang === 'ar' ? 'ar' : state.lang, {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+  document.getElementById('gregorianDate').textContent = greg;
+  
+  document.getElementById('hijriAdjustValue').textContent = (state.hijriAdjust > 0 ? '+' : '') + state.hijriAdjust;
+};
+
+// Fix 2: Arabic city names
+const CITY_NAMES_AR_FIX = {
+  'marrakech': 'مراكش', 'casablanca': 'الدار البيضاء', 'cairo': 'القاهرة', 'mecca': 'مكة', 'medina': 'المدينة',
+  'dubai': 'دبي', 'istanbul': 'إسطنبول', 'beirut': 'بيروت', 'damascus': 'دمشق', 'london': 'لندن', 'paris': 'باريس'
+};
+
+function getLocalizedCityName(cityName) {
+  if (!cityName) return cityName;
+  const lower = cityName.toLowerCase();
+  if (state.lang === 'ar') return CITY_NAMES_AR_FIX[lower] || cityName;
+  return cityName;
+}
+
+// Fix 3: Cardinal directions
+function getCardinalDirection(angle) {
+  const dirs_ar = ['الشمال', 'الشرق', 'الجنوب', 'الغرب'];
+  const dirs_en = ['North', 'East', 'South', 'West'];
+  const dirs_fr = ['Nord', 'Est', 'Sud', 'Ouest'];
+  const idx = Math.round(((angle % 360) / 90)) % 4;
+  if (state.lang === 'ar') return dirs_ar[idx];
+  if (state.lang === 'en') return dirs_en[idx];
+  return dirs_fr[idx];
+}
+
+// Override renderQibla
+window.renderQibla = function() {
+  if (!state.location) {
+    document.getElementById('qiblaAngle').textContent = '—°';
+    document.getElementById('qiblaDistance').textContent = '— km';
+    return;
+  }
+  const angle = calculateQibla(state.location.lat, state.location.lng);
+  state.qiblaAngle = angle;
+  const dist = haversineKm(state.location.lat, state.location.lng, KAABA.lat, KAABA.lng);
+  
+  const cardinal = getCardinalDirection(angle);
+  document.getElementById('qiblaAngle').textContent = `${angle.toFixed(1)}° (${cardinal})`;
+  document.getElementById('qiblaDistance').textContent = `${Math.round(dist).toLocaleString()} km`;
+  
+  renderCompassTicks();
+  updateCompass();
+};
+
+// Override applyLanguage
+window.applyLanguage = function() {
+  document.documentElement.lang = state.lang;
+  document.documentElement.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+  
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    const translated = t(key);
+    if (translated && translated !== key) el.textContent = translated;
+  });
+  
+  renderHijriToday();
+  if (state.qiblaAngle !== null) renderQibla();
+  
+  if (state.location && state.location.name) {
+    const localized = getLocalizedCityName(state.location.name);
+    document.getElementById('locationText').innerHTML = `📍 <span>${localized}</span>`;
+  }
+  
+  document.getElementById('langSelect').value = state.lang;
+};
+
+// Apply fixes when app loads
+setTimeout(() => {
+  applyLanguage();
+  renderHijriToday();
+  if (state.location) renderQibla();
+}, 500);
+</script>  
 </html>
