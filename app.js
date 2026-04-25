@@ -13,6 +13,7 @@ const I18N = {
     adhanSettings: "Voix de l'Adhan",
     adhanSub: "Choisissez le muezzin qui récite l'appel à la prière.",
     testAdhan: '▶ Tester l\'Adhan',
+    muteMode: '🔇 Mode silence',
     calcMethod: 'Méthode de calcul',
     direction: 'Direction Qibla', distance: 'Distance Kaaba',
     heading: 'Orientation téléphone',
@@ -50,6 +51,7 @@ const I18N = {
     adhanSettings: 'Adhan voice',
     adhanSub: 'Choose the muezzin who recites the call to prayer.',
     testAdhan: '▶ Test Adhan',
+    muteMode: '🔇 Mute mode',
     calcMethod: 'Calculation method',
     direction: 'Qibla direction', distance: 'Kaaba distance',
     heading: 'Phone heading',
@@ -87,6 +89,7 @@ const I18N = {
     adhanSettings: 'صوت الأذان',
     adhanSub: 'اختر المؤذن الذي ترغب في الاستماع إليه.',
     testAdhan: '▶ تجربة الأذان',
+    muteAdhan: '🔇 وضع الصمت',
     calcMethod: 'طريقة الحساب',
     direction: 'اتجاه القبلة', distance: 'المسافة إلى الكعبة',
     heading: 'اتجاه الهاتف',
@@ -98,6 +101,7 @@ const I18N = {
     islamicDates: 'تواريخ إسلامية مهمة',
     today: 'اليوم', importantDate: 'تاريخ مهم',
     settings: 'الإعدادات', location: 'الموقع',
+    muteMode: 'وضع الصمت (بدون صوت)',
     detectGPS: 'تحديد موقعي (GPS)', searchCity: '🔍 بحث',
     notifications: 'الإشعارات',
     enableNotif: 'تفعيل إشعارات الأذان',
@@ -124,6 +128,7 @@ const I18N = {
     adhanSettings: 'Voz del Adhan',
     adhanSub: 'Elija el muecín.',
     testAdhan: '▶ Probar Adhan',
+    muteMode: '🔇 Modo silencio',
     calcMethod: 'Método de cálculo',
     direction: 'Dirección Qibla', distance: 'Distancia Kaaba',
     heading: 'Orientación',
@@ -161,6 +166,7 @@ const I18N = {
     adhanSettings: 'Ezan sesi',
     adhanSub: 'Müezzini seçin.',
     testAdhan: '▶ Ezanı dene',
+    muteMode: '🔇 Sessiz mod',
     calcMethod: 'Hesaplama yöntemi',
     direction: 'Kıble yönü', distance: 'Kâbe mesafesi',
     heading: 'Telefon yönü',
@@ -301,6 +307,7 @@ const state = {
   location: JSON.parse(localStorage.getItem('salati_location') || 'null'),
   method: parseInt(localStorage.getItem('salati_method')) || 21, // Maroc par défaut
   adhan: localStorage.getItem('salati_adhan') || 'morocco',
+  muteMode: localStorage.getItem('salati_muteMode') === 'true',
   hijriAdjust: parseInt(localStorage.getItem('salati_hijri_adjust')) || 0,
   prayerTimes: null,
   hijriToday: null,
@@ -400,8 +407,69 @@ const HIJRI_MONTHS_AR = [
   'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
 ];
 
-// ============ CALCUL QIBLA ============
-const KAABA = { lat: 21.422487, lng: 39.826206 };
+// ============ VILLE DICTIONNAIRE ARABE ============
+const CITY_NAMES_AR = {
+  'marrakech': 'مراكش',
+  'casablanca': 'الدار البيضاء',
+  'fes': 'فاس',
+  'tangier': 'طنجة',
+  'rabat': 'الرباط',
+  'meknes': 'مكناس',
+  'agadir': 'أكادير',
+  'essaouira': 'الصويرة',
+  'oujda': 'وجدة',
+  'taroudant': 'تارودانت',
+  'cairo': 'القاهرة',
+  'alexandria': 'الإسكندرية',
+  'giza': 'الجيزة',
+  'aswan': 'أسوان',
+  'luxor': 'الأقصر',
+  'mecca': 'مكة',
+  'medina': 'المدينة',
+  'riyadh': 'الرياض',
+  'jeddah': 'جدة',
+  'dubai': 'دبي',
+  'abu dhabi': 'أبو ظبي',
+  'kuwait': 'الكويت',
+  'doha': 'الدوحة',
+  'muscat': 'مسقط',
+  'sanaa': 'صنعاء',
+  'istanbul': 'إسطنبول',
+  'ankara': 'أنقرة',
+  'beirut': 'بيروت',
+  'damascus': 'دمشق',
+  'amman': 'عمّان',
+  'jerusalem': 'القدس',
+  'ramallah': 'رام الله',
+  'bagdad': 'بغداد',
+  'london': 'لندن',
+  'paris': 'باريس',
+  'new york': 'نيويورك',
+  'toronto': 'تورونتو',
+  'sydney': 'سيدني'
+};
+
+// ============ TRADUCTIONS VILLES ============
+const CITY_NAMES_ES = {
+  'marrakech': 'Marrakech',
+  'casablanca': 'Casablanca'
+};
+
+const CITY_NAMES_TR = {
+  'marrakech': 'Marakeş',
+  'cairo': 'Kahire',
+  'istanbul': 'İstanbul'
+};
+
+function getLocalizedCityName(cityName, lang = state.lang) {
+  if (!cityName) return cityName;
+  const lower = cityName.toLowerCase();
+  
+  if (lang === 'ar') return CITY_NAMES_AR[lower] || cityName;
+  if (lang === 'es') return CITY_NAMES_ES[lower] || cityName;
+  if (lang === 'tr') return CITY_NAMES_TR[lower] || cityName;
+  return cityName; // Default: French/English/original
+}
 
 function calculateQibla(lat, lng) {
   const φ1 = lat * Math.PI / 180;
@@ -628,7 +696,12 @@ function renderCalendar() {
     state.calendarMonth = { year: today.year, month: today.month };
   }
   const { year, month } = state.calendarMonth;
-  $('#calHijriMonth').textContent = `${HIJRI_MONTHS[month - 1]} ${year}`;
+  
+  // Show Arabic month names if language is Arabic
+  const monthName = state.lang === 'ar' ? 
+    HIJRI_MONTHS_AR[month - 1] : 
+    HIJRI_MONTHS[month - 1];
+  $('#calHijriMonth').textContent = `${monthName} ${year}`;
 
   // Trouver premier jour hijri du mois -> julien -> grégorien
   const jd1 = hijriToJulian(year, month, 1);
@@ -778,7 +851,7 @@ function updateCompass() {
 }
 
 async function activateCompass() {
-  // iOS nécessite une permission
+  // iOS 13+ nécessite une permission explicite
   if (typeof DeviceOrientationEvent !== 'undefined'
       && typeof DeviceOrientationEvent.requestPermission === 'function') {
     try {
@@ -799,17 +872,41 @@ async function activateCompass() {
   }
 
   state.compassActive = true;
+  toast('📡 Boussole activée. Bougez votre téléphone...', 'info');
+
+  let headingReceived = false;
 
   const handler = (e) => {
     // iOS: webkitCompassHeading (plus fiable). Autres: alpha
     let heading = null;
     if (e.webkitCompassHeading !== undefined) {
       heading = e.webkitCompassHeading;
-    } else if (e.alpha !== null) {
-      // alpha: 0=Nord, mais tourne dans le sens inverse de la boussole
-      heading = 360 - e.alpha;
+    } else if (e.alpha !== null && e.beta !== null && e.gamma !== null) {
+      // Fallback: calculer l'azimut à partir des axes (moins fiable)
+      const alpha = e.alpha * Math.PI / 180;
+      const beta = e.beta * Math.PI / 180;
+      const gamma = e.gamma * Math.PI / 180;
+      
+      const cos_b = Math.cos(beta);
+      const sin_a = Math.sin(alpha);
+      const cos_a = Math.cos(alpha);
+      const sin_b = Math.sin(beta);
+      const cos_g = Math.cos(gamma);
+      const sin_g = Math.sin(gamma);
+      
+      const azimuth = Math.atan2(
+        sin_a * cos_g - cos_a * sin_b * sin_g,
+        cos_b * sin_g
+      );
+      heading = (Math.PI / 2 - azimuth) * 180 / Math.PI;
+      heading = (heading + 360) % 360;
     }
+    
     if (heading !== null) {
+      if (!headingReceived) {
+        headingReceived = true;
+        toast('✅ Boussole OK', 'success');
+      }
       state.currentHeading = heading;
       updateCompass();
     }
@@ -868,7 +965,10 @@ async function setLocation(loc) {
   const name = loc.name || await reverseGeocode(loc.lat, loc.lng);
   state.location.name = name;
   localStorage.setItem('salati_location', JSON.stringify(state.location));
-  $('#locationText').innerHTML = `📍 <span>${name}</span>`;
+  
+  // Display city name in current language
+  const localizedName = getLocalizedCityName(name);
+  $('#locationText').innerHTML = `📍 <span>${localizedName}</span>`;
 
   state.prayerTimes = await fetchPrayerTimes(loc.lat, loc.lng);
   renderPrayers();
@@ -930,8 +1030,8 @@ function triggerAdhan(prayerKey) {
     n.onclick = () => { window.focus(); n.close(); };
   }
 
-  // Audio Adhan
-  if (state.adhan !== 'none') {
+  // Audio Adhan (respect mute mode)
+  if (state.adhan !== 'none' && !state.muteMode) {
     const audio = $('#adhanAudio');
     audio.src = ADHAN_SOURCES[state.adhan];
     audio.play().catch(err => console.warn('Audio autoplay bloqué:', err));
@@ -1057,6 +1157,28 @@ function attachEvents() {
     state.adhan = e.target.value;
     localStorage.setItem('salati_adhan', state.adhan);
   });
+  
+  // Mute mode toggle
+  const muteContainer = document.createElement('div');
+  muteContainer.className = 'switch-row';
+  muteContainer.style.marginTop = '1rem';
+  muteContainer.innerHTML = `
+    <span data-i18n="muteMode">🔇 Mode silence</span>
+    <label class="switch">
+      <input type="checkbox" id="muteToggle">
+      <span class="slider"></span>
+    </label>
+  `;
+  $('#adhanSelect').parentElement.insertBefore(muteContainer, $('#testAdhanBtn'));
+  
+  const muteToggle = $('#muteToggle');
+  muteToggle.checked = state.muteMode || false;
+  muteToggle.addEventListener('change', e => {
+    state.muteMode = e.target.checked;
+    localStorage.setItem('salati_muteMode', state.muteMode);
+    toast(state.muteMode ? '🔇 Mode silence activé' : '🔊 Mode silence désactivé');
+  });
+  
   $('#testAdhanBtn').addEventListener('click', () => {
     if (state.adhan === 'none') {
       toast('Son désactivé');
@@ -1156,7 +1278,8 @@ async function init() {
 
   // Localisation
   if (state.location) {
-    $('#locationText').innerHTML = `📍 <span>${state.location.name || '...'}</span>`;
+    const localizedName = getLocalizedCityName(state.location.name);
+    $('#locationText').innerHTML = `📍 <span>${localizedName || '...'}</span>`;
     state.prayerTimes = await fetchPrayerTimes(state.location.lat, state.location.lng);
     renderPrayers();
     renderQibla();
@@ -1206,3 +1329,4 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
