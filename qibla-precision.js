@@ -24,9 +24,9 @@ const KAABA_PRECISE = {
 
 const QIBLA_TOLERANCE_DEGREES = 3;  // ±3° religious tolerance
 const SIGNIFICANT_MOVEMENT_M = 100;  // Recalculate if moved >100m
-const DEADBAND_DEGREES = 2.5;        // Ignore changes <2.5°
-const SAMPLE_RATE_HZ = 15;           // 15 Hz update rate
-const FILTER_WINDOW_MS = 800;        // 800ms moving average
+const DEADBAND_DEGREES = 0.5;        // Ignore changes <0.5° (high precision)
+const SAMPLE_RATE_HZ = 30;           // 30 Hz update rate (max precision)
+const FILTER_WINDOW_MS = 400;        // 400ms moving average (more responsive)
 
 // ============ STATE ============
 const QiblaModule = {
@@ -141,8 +141,8 @@ class HeadingKalmanFilter {
   constructor() {
     this.x = 0;        // State estimate
     this.P = 1;        // Estimate uncertainty
-    this.Q = 0.01;     // Process noise
-    this.R = 1;        // Measurement noise
+    this.Q = 0.005;    // Process noise (more precise)
+    this.R = 0.5;      // Measurement noise (trust sensor more)
     this.initialized = false;
   }
   

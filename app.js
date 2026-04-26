@@ -1035,7 +1035,7 @@ function renderQibla() {
     
     const cardinalDir = getCardinalDirection(trueBearing);
     if (angleEl) {
-      angleEl.textContent = `${trueBearing.toFixed(2)}° (${cardinalDir})`;
+      angleEl.textContent = `${trueBearing.toFixed(3)}° (${cardinalDir})`;
     }
     if (distEl) {
       distEl.textContent = `${Math.round(distance).toLocaleString()} km`;
@@ -1051,7 +1051,7 @@ function renderQibla() {
     const dist = haversineKm(state.location.lat, state.location.lng, KAABA.lat, KAABA.lng);
     
     const cardinalDir = getCardinalDirection(angle);
-    if (angleEl) angleEl.textContent = `${angle.toFixed(1)}° (${cardinalDir})`;
+    if (angleEl) angleEl.textContent = `${angle.toFixed(3)}° (${cardinalDir})`;
     if (distEl) distEl.textContent = `${Math.round(dist).toLocaleString()} km`;
   }
 
@@ -1174,7 +1174,7 @@ function updateCompass() {
     }
     
     // Show heading with appropriate precision
-    $('#deviceHeading').textContent = `${state.currentHeading.toFixed(1)}°`;
+    $('#deviceHeading').textContent = `${state.currentHeading.toFixed(2)}°`;
   }
 }
 
