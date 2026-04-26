@@ -675,8 +675,7 @@ body {
 .compass-cardinal.west  { left: 14px; top: 50%; transform: translateY(-50%); }
 
 .compass-ticks {
-  position: absolute;
-  inset: 0;
+  display: none; /* Hidden - cleaner like Salatuk */
 }
 
 .compass-ticks .tick {

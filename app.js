@@ -1153,11 +1153,15 @@ async function activateCompass() {
         let diff = heading - state.smoothedHeading;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
-        // Only update if change is significant (> 4°) to filter noise/tremblement
-        if (Math.abs(diff) > 4) {
-          state.smoothedHeading = (state.smoothedHeading + diff * 0.1 + 360) % 360;
+        // Strict filter - only update if change > 8° (téléphone posé = pas de mouvement)
+        if (Math.abs(diff) > 8) {
+          state.smoothedHeading = (state.smoothedHeading + diff * 0.05 + 360) % 360;
           state.currentHeading = state.smoothedHeading;
-          updateCompass();
+          // Throttle updates to max 3/second
+          if (!state.lastCompassUpdate || Date.now() - state.lastCompassUpdate > 333) {
+            state.lastCompassUpdate = Date.now();
+            updateCompass();
+          }
         }
       }
     }
