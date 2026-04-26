@@ -1073,8 +1073,9 @@ function updateCompass() {
   
   // Statut alignement + direction
   if (state.compassActive) {
-    const diff = Math.abs(((state.qiblaAngle - state.currentHeading + 540) % 360) - 180) - 180;
-    const aligned = Math.abs(diff) > 175;
+    const rawDiff = Math.abs(((state.qiblaAngle - state.currentHeading + 360) % 360));
+    const angularDiff = Math.min(rawDiff, 360 - rawDiff);
+    const aligned = angularDiff < 5;
     
     const status = $('#qiblaStatus');
     if (aligned) {
@@ -1084,7 +1085,7 @@ function updateCompass() {
       status.textContent = t('facingQibla');
       status.classList.remove('aligned');
     }
-    $('#deviceHeading').textContent = `${state.currentHeading.toFixed(0)}°`;
+    $('#deviceHeading').textContent = `${state.currentHeading.toFixed(1)}°`;
   }
 }
 
@@ -1153,12 +1154,14 @@ async function activateCompass() {
         let diff = heading - state.smoothedHeading;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
-        // Strict filter - only update if change > 8° (téléphone posé = pas de mouvement)
-        if (Math.abs(diff) > 8) {
-          state.smoothedHeading = (state.smoothedHeading + diff * 0.05 + 360) % 360;
+        // Smart filter: precision when moving, stability when still
+        if (Math.abs(diff) > 1.5) {
+          // More smoothing for small movements (stability), less for large (responsiveness)
+          const factor = Math.abs(diff) > 15 ? 0.3 : 0.15;
+          state.smoothedHeading = (state.smoothedHeading + diff * factor + 360) % 360;
           state.currentHeading = state.smoothedHeading;
-          // Throttle updates to max 3/second
-          if (!state.lastCompassUpdate || Date.now() - state.lastCompassUpdate > 333) {
+          // Throttle updates to max 10/second for smoothness
+          if (!state.lastCompassUpdate || Date.now() - state.lastCompassUpdate > 100) {
             state.lastCompassUpdate = Date.now();
             updateCompass();
           }
