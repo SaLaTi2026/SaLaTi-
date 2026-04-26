@@ -740,8 +740,9 @@ body {
 }
 
 .compass-needle svg {
-  height: 80%;
+  height: 60%;
   width: auto;
+  max-width: 80%;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
 }
 

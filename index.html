@@ -197,7 +197,7 @@
                 </div>
                 <!-- Aiguille (FLÈCHE qui tourne dans le cercle) -->
                 <div class="compass-needle" id="qiblaNeedle">
-                  <svg viewBox="0 0 60 200" width="60" height="200" aria-hidden="true">
+                  <svg viewBox="0 0 60 200" width="60" height="200" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
                     <defs>
                       <linearGradient id="needleGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stop-color="#f0cd5a"/>
@@ -205,11 +205,11 @@
                         <stop offset="100%" stop-color="#a88621"/>
                       </linearGradient>
                     </defs>
-                    <!-- Grande flèche dorée -->
-                    <path d="M30 10 L52 65 L36 58 L36 130 L24 130 L24 58 L8 65 Z" fill="url(#needleGrad)" stroke="#a88621" stroke-width="1"/>
+                    <!-- Flèche dorée (plus petite, reste dans le cercle) -->
+                    <path d="M30 40 L46 80 L34 75 L34 125 L26 125 L26 75 L14 80 Z" fill="url(#needleGrad)" stroke="#a88621" stroke-width="1"/>
                     <!-- Pivot central -->
-                    <circle cx="30" cy="100" r="10" fill="#0a4d3a" stroke="#d4af37" stroke-width="2"/>
-                    <circle cx="30" cy="100" r="4" fill="#d4af37"/>
+                    <circle cx="30" cy="100" r="8" fill="#0a4d3a" stroke="#d4af37" stroke-width="2"/>
+                    <circle cx="30" cy="100" r="3" fill="#d4af37"/>
                   </svg>
                 </div>
               </div>
@@ -222,7 +222,6 @@
               <div class="qibla-row">
                 <span data-i18n="direction">Direction Qibla</span>
                 <strong id="qiblaAngle">—°</strong>
-                <strong id="qiblaDirection"></strong>
               </div>
               <div class="qibla-row">
                 <span data-i18n="distance">Distance Kaaba</span>
