@@ -195,34 +195,27 @@
                   <!-- Graduations -->
                   <div class="compass-ticks" id="compassTicks"></div>
                 </div>
-                <!-- Aiguille Qibla avec flèche + Kaaba à l'extérieur -->
+                <!-- Aiguille (FLÈCHE qui tourne dans le cercle) -->
                 <div class="compass-needle" id="qiblaNeedle">
-                  <svg viewBox="0 0 80 320" width="80" height="320" aria-hidden="true">
+                  <svg viewBox="0 0 60 200" width="60" height="200" aria-hidden="true">
                     <defs>
                       <linearGradient id="needleGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stop-color="#f0cd5a"/>
+                        <stop offset="50%" stop-color="#d4af37"/>
                         <stop offset="100%" stop-color="#a88621"/>
                       </linearGradient>
-                      <radialGradient id="kaabaCircle">
-                        <stop offset="0%" stop-color="#1a2e26"/>
-                        <stop offset="100%" stop-color="#0a4d3a"/>
-                      </radialGradient>
                     </defs>
-                    
-                    <!-- Ligne dorée du centre vers la flèche -->
-                    <line x1="40" y1="160" x2="40" y2="100" stroke="url(#needleGrad)" stroke-width="3"/>
-                    
-                    <!-- Grande flèche dorée pointant vers Kaaba -->
-                    <path d="M40 70 L60 110 L45 105 L45 160 L35 160 L35 105 L20 110 Z" fill="url(#needleGrad)" stroke="#a88621" stroke-width="1"/>
-                    
-                    <!-- Cercle Kaaba à l'extérieur (au-dessus de la flèche) -->
-                    <circle cx="40" cy="30" r="26" fill="url(#kaabaCircle)" stroke="#d4af37" stroke-width="3"/>
-                    <text x="40" y="40" text-anchor="middle" fill="#d4af37" font-size="32" font-weight="bold">🕋</text>
-                    
-                    <!-- Petit point au centre du cercle de la boussole -->
-                    <circle cx="40" cy="160" r="6" fill="#d4af37"/>
+                    <!-- Grande flèche dorée -->
+                    <path d="M30 10 L52 65 L36 58 L36 130 L24 130 L24 58 L8 65 Z" fill="url(#needleGrad)" stroke="#a88621" stroke-width="1"/>
+                    <!-- Pivot central -->
+                    <circle cx="30" cy="100" r="10" fill="#0a4d3a" stroke="#d4af37" stroke-width="2"/>
+                    <circle cx="30" cy="100" r="4" fill="#d4af37"/>
                   </svg>
                 </div>
+              </div>
+              <!-- Kaaba FIXE au-dessus du cercle (ne tourne pas) -->
+              <div class="kaaba-marker-fixed">
+                <span class="kaaba-emoji">🕋</span>
               </div>
             </div>
             <div class="qibla-info">

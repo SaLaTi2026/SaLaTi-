@@ -699,35 +699,50 @@ body {
   background: var(--emerald-700);
 }
 
+/* ===== KAABA FIXED MARKER (Stays at top, doesn't rotate) ===== */
+.compass-wrapper {
+  position: relative;
+  padding-top: 50px; /* Space for Kaaba marker */
+}
+
+.kaaba-marker-fixed {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #0a4d3a, #062d23);
+  border: 3px solid #d4af37;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.kaaba-emoji {
+  font-size: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Reset compass needle (now just rotates the arrow) */
 .compass-needle {
   position: absolute;
-  top: -40px;          /* Extend above the circle */
-  left: 0;
-  right: 0;
-  bottom: -40px;       /* Symmetric extension */
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   pointer-events: none;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
-  z-index: 10;
 }
 
 .compass-needle svg {
-  height: 110%;
+  height: 80%;
   width: auto;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-}
-
-/* Make compass container allow overflow */
-.compass {
-  overflow: visible !important;
-}
-
-.compass-wrapper {
-  overflow: visible !important;
-  padding: 40px 0;     /* Space for Kaaba marker outside */
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
 }
 
 .qibla-info {
