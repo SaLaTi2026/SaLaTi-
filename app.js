@@ -1317,6 +1317,7 @@ function showView(name) {
 
   if (name === 'calendar') renderCalendar();
   if (name === 'duas') renderDuas();
+  if (name === 'qibla') renderQibla(); // FIX: Re-render Qibla on tab switch
 }
 
 // ============ PRAYER ADJUSTS SETTINGS ============
