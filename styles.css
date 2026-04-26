@@ -701,18 +701,33 @@ body {
 
 .compass-needle {
   position: absolute;
-  inset: 0;
+  top: -40px;          /* Extend above the circle */
+  left: 0;
+  right: 0;
+  bottom: -40px;       /* Symmetric extension */
   display: flex;
   justify-content: center;
+  align-items: center;
   pointer-events: none;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
+  z-index: 10;
 }
 
 .compass-needle svg {
-  height: 100%;
+  height: 110%;
   width: auto;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* Make compass container allow overflow */
+.compass {
+  overflow: visible !important;
+}
+
+.compass-wrapper {
+  overflow: visible !important;
+  padding: 40px 0;     /* Space for Kaaba marker outside */
 }
 
 .qibla-info {

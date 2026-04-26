@@ -195,19 +195,28 @@
                   <!-- Graduations -->
                   <div class="compass-ticks" id="compassTicks"></div>
                 </div>
-                <!-- Aiguille Qibla -->
+                <!-- Aiguille Qibla avec Kaaba à l'extérieur -->
                 <div class="compass-needle" id="qiblaNeedle">
-                  <svg viewBox="0 0 60 200" width="60" height="200" aria-hidden="true">
+                  <svg viewBox="0 0 80 320" width="80" height="320" aria-hidden="true">
                     <defs>
                       <linearGradient id="needleGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#f0cd5a"/>
-                        <stop offset="100%" stop-color="#d4af37"/>
+                        <stop offset="0%" stop-color="#d4af37"/>
+                        <stop offset="100%" stop-color="#a88621"/>
                       </linearGradient>
+                      <radialGradient id="kaabaCircle">
+                        <stop offset="0%" stop-color="#1a2e26"/>
+                        <stop offset="100%" stop-color="#0a4d3a"/>
+                      </radialGradient>
                     </defs>
-                    <path d="M30 0 L45 40 L30 30 L15 40 Z" fill="url(#needleGrad)"/>
-                    <circle cx="30" cy="100" r="12" fill="#0a4d3a" stroke="#d4af37" stroke-width="2"/>
-                    <text x="30" y="105" text-anchor="middle" fill="#d4af37" font-size="16" font-weight="bold">🕋</text>
-                    <line x1="30" y1="35" x2="30" y2="90" stroke="#d4af37" stroke-width="2"/>
+                    <!-- Ligne du milieu (de centre vers Kaaba) -->
+                    <line x1="40" y1="160" x2="40" y2="50" stroke="url(#needleGrad)" stroke-width="3"/>
+                    
+                    <!-- Cercle Kaaba à l'extérieur -->
+                    <circle cx="40" cy="30" r="26" fill="url(#kaabaCircle)" stroke="#d4af37" stroke-width="3"/>
+                    <text x="40" y="40" text-anchor="middle" fill="#d4af37" font-size="32" font-weight="bold">🕋</text>
+                    
+                    <!-- Petit point au centre -->
+                    <circle cx="40" cy="160" r="6" fill="#d4af37"/>
                   </svg>
                 </div>
               </div>
