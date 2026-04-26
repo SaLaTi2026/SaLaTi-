@@ -859,14 +859,26 @@ function updateNextPrayer() {
 
   $('#nextPrayerName').textContent = t(state.nextPrayer.key.toLowerCase());
   
-  // Format: -1H 30M 30S or just -30M 30S if less than 1 hour
+  // Format: -1H 30M 30S (LTR) or 1H 30M 30S - (RTL arabe)
   let countdown = '';
-  if (h > 0) {
-    countdown = `-${h}H ${m}M ${s}S`;
-  } else if (m > 0) {
-    countdown = `-${m}M ${s}S`;
+  if (state.lang === 'ar') {
+    // Arabe RTL: minus sign on the RIGHT
+    if (h > 0) {
+      countdown = `${h}H ${m}M ${s}S -`;
+    } else if (m > 0) {
+      countdown = `${m}M ${s}S -`;
+    } else {
+      countdown = `${s}S -`;
+    }
   } else {
-    countdown = `-${s}S`;
+    // French/English LTR: minus sign on the LEFT
+    if (h > 0) {
+      countdown = `-${h}H ${m}M ${s}S`;
+    } else if (m > 0) {
+      countdown = `-${m}M ${s}S`;
+    } else {
+      countdown = `-${s}S`;
+    }
   }
   $('#countdown').textContent = countdown;
   
@@ -1050,10 +1062,18 @@ function updateCompass() {
   const needleAngle = state.qiblaAngle - (state.compassActive ? state.currentHeading : 0);
   needle.style.transform = `rotate(${needleAngle}deg)`;
 
-  // Statut alignement
+  // Statut alignement + direction
   if (state.compassActive) {
     const diff = Math.abs(((state.qiblaAngle - state.currentHeading + 540) % 360) - 180) - 180;
     const aligned = Math.abs(diff) > 175;
+    
+    // UPDATE direction affichée
+    const cardinalDir = getCardinalDirection(state.qiblaAngle);
+    const dirEl = $('#qiblaDirection');
+    if (dirEl) {
+      dirEl.textContent = `${state.qiblaAngle.toFixed(1)}° (${cardinalDir})`;
+    }
+    
     const status = $('#qiblaStatus');
     if (aligned) {
       status.textContent = t('aligned');
