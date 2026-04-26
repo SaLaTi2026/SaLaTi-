@@ -862,13 +862,13 @@ function updateNextPrayer() {
   // Format: -1H 30M 30S (LTR) or 1H 30M 30S - (RTL arabe)
   let countdown = '';
   if (state.lang === 'ar') {
-    // Arabe RTL: minus sign on the RIGHT
+    // Arabe RTL: minus on RIGHT (use RTL override)
     if (h > 0) {
-      countdown = `${h}H ${m}M ${s}S -`;
+      countdown = `${h}H ${m}M ${s}S ‏−`; // RTL mark + minus
     } else if (m > 0) {
-      countdown = `${m}M ${s}S -`;
+      countdown = `${m}M ${s}S ‏−`;
     } else {
-      countdown = `${s}S -`;
+      countdown = `${s}S ‏−`;
     }
   } else {
     // French/English LTR: minus sign on the LEFT
