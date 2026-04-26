@@ -1069,14 +1069,7 @@ function updateCompass() {
   const needleAngle = state.qiblaAngle - (state.compassActive ? state.currentHeading : 0);
   needle.style.transform = `rotate(${needleAngle}deg)`;
 
-  // Always show Qibla direction
-  if (state.qiblaAngle !== null) {
-    const cardinalDir = getCardinalDirection(state.qiblaAngle);
-    const dirEl = $('#qiblaDirection');
-    if (dirEl) {
-      dirEl.textContent = `${state.qiblaAngle.toFixed(1)}° (${cardinalDir})`;
-    }
-  }
+  // Direction is already shown in #qiblaAngle - no duplicate
   
   // Statut alignement + direction
   if (state.compassActive) {
