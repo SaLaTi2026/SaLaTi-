@@ -1005,19 +1005,31 @@ function renderDuas(filter = 'all') {
 
 // ============ QIBLA ============
 function renderQibla() {
+  console.log('[Qibla] renderQibla called, location:', state.location);
+  
+  const angleEl = $('#qiblaAngle');
+  const distEl = $('#qiblaDistance');
+  
   if (!state.location) {
-    $('#qiblaAngle').textContent = '—°';
-    $('#qiblaDistance').textContent = '— km';
+    if (angleEl) angleEl.textContent = '—°';
+    if (distEl) distEl.textContent = '— km';
     return;
   }
+  
   const angle = calculateQibla(state.location.lat, state.location.lng);
   state.qiblaAngle = angle;
   const dist = haversineKm(state.location.lat, state.location.lng, KAABA.lat, KAABA.lng);
   
-  // Display angle with cardinal direction (e.g., "45° (Est/East/الشرق)")
+  console.log('[Qibla] Calculated angle:', angle, 'distance:', dist);
+  
+  // Display angle with cardinal direction
   const cardinalDir = getCardinalDirection(angle);
-  $('#qiblaAngle').textContent = `${angle.toFixed(1)}° (${cardinalDir})`;
-  $('#qiblaDistance').textContent = `${Math.round(dist).toLocaleString()} km`;
+  if (angleEl) {
+    angleEl.textContent = `${angle.toFixed(1)}° (${cardinalDir})`;
+  }
+  if (distEl) {
+    distEl.textContent = `${Math.round(dist).toLocaleString()} km`;
+  }
 
   // Rendu graduations boussole
   renderCompassTicks();
