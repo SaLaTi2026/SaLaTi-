@@ -1012,7 +1012,7 @@ function renderDuas(filter = 'all') {
 
 // ============ QIBLA ============
 function renderQibla() {
-  console.log('[Qibla] renderQibla called, location:', state.location);
+  console.log('[Qibla] renderQibla called');
   
   const angleEl = $('#qiblaAngle');
   const distEl = $('#qiblaDistance');
@@ -1023,22 +1023,38 @@ function renderQibla() {
     return;
   }
   
-  const angle = calculateQibla(state.location.lat, state.location.lng);
-  state.qiblaAngle = angle;
-  const dist = haversineKm(state.location.lat, state.location.lng, KAABA.lat, KAABA.lng);
-  
-  console.log('[Qibla] Calculated angle:', angle, 'distance:', dist);
-  
-  // Display angle with cardinal direction
-  const cardinalDir = getCardinalDirection(angle);
-  if (angleEl) {
-    angleEl.textContent = `${angle.toFixed(1)}° (${cardinalDir})`;
-  }
-  if (distEl) {
-    distEl.textContent = `${Math.round(dist).toLocaleString()} km`;
+  // Use precision module
+  if (window.QiblaPrecision) {
+    window.QiblaPrecision.setLocation(state.location.lat, state.location.lng);
+    
+    const trueBearing = window.QiblaPrecision.getQiblaBearing();
+    const distance = window.QiblaPrecision.getDistance();
+    const declination = window.QiblaPrecision.getDeclination();
+    
+    state.qiblaAngle = trueBearing;
+    
+    const cardinalDir = getCardinalDirection(trueBearing);
+    if (angleEl) {
+      angleEl.textContent = `${trueBearing.toFixed(2)}° (${cardinalDir})`;
+    }
+    if (distEl) {
+      distEl.textContent = `${Math.round(distance).toLocaleString()} km`;
+    }
+    
+    console.log('[Qibla] True:', trueBearing.toFixed(2), '° Magnetic:', 
+                window.QiblaPrecision.getDiagnostics().qiblaMagnetic, 
+                '° Declination:', declination.toFixed(2), '°');
+  } else {
+    // Fallback to old calculation
+    const angle = calculateQibla(state.location.lat, state.location.lng);
+    state.qiblaAngle = angle;
+    const dist = haversineKm(state.location.lat, state.location.lng, KAABA.lat, KAABA.lng);
+    
+    const cardinalDir = getCardinalDirection(angle);
+    if (angleEl) angleEl.textContent = `${angle.toFixed(1)}° (${cardinalDir})`;
+    if (distEl) distEl.textContent = `${Math.round(dist).toLocaleString()} km`;
   }
 
-  // Rendu graduations boussole
   renderCompassTicks();
   updateCompass();
 }
@@ -1073,18 +1089,47 @@ function updateCompass() {
   
   // Statut alignement + direction
   if (state.compassActive) {
-    const rawDiff = Math.abs(((state.qiblaAngle - state.currentHeading + 360) % 360));
-    const angularDiff = Math.min(rawDiff, 360 - rawDiff);
-    const aligned = angularDiff < 5;
+    // Use QiblaPrecision for alignment check (±3° religious tolerance)
+    let aligned = false;
+    let alignmentDiff = 0;
+    if (window.QiblaPrecision) {
+      const result = window.QiblaPrecision.isAligned(state.currentHeading);
+      if (result) {
+        aligned = result.aligned;
+        alignmentDiff = result.diff;
+      }
+    } else {
+      const rawDiff = Math.abs(((state.qiblaAngle - state.currentHeading + 360) % 360));
+      const angularDiff = Math.min(rawDiff, 360 - rawDiff);
+      aligned = angularDiff < 3;
+      alignmentDiff = angularDiff;
+    }
     
     const status = $('#qiblaStatus');
+    
+    // Get signal quality from precision module
+    let qualityIndicator = '';
+    if (window.QiblaPrecision) {
+      const quality = window.QiblaPrecision.getSignalQuality();
+      if (quality === 'good') qualityIndicator = ' 🟢';
+      else if (quality === 'fair') qualityIndicator = ' 🟡';
+      else if (quality === 'poor') qualityIndicator = ' 🔴 ' + (state.lang === 'ar' ? '(تشويش)' : state.lang === 'fr' ? '(interférence)' : '(noise)');
+    }
+    
     if (aligned) {
-      status.textContent = t('aligned');
+      status.textContent = `✅ ${t('aligned')}${qualityIndicator}`;
       status.classList.add('aligned');
     } else {
-      status.textContent = t('facingQibla');
+      // Show proximity feedback
+      let proximity = '';
+      if (alignmentDiff < 10) {
+        proximity = state.lang === 'ar' ? ' (قريب)' : state.lang === 'fr' ? ' (proche)' : ' (close)';
+      }
+      status.textContent = `${t('facingQibla')}${proximity}${qualityIndicator}`;
       status.classList.remove('aligned');
     }
+    
+    // Show heading with appropriate precision
     $('#deviceHeading').textContent = `${state.currentHeading.toFixed(1)}°`;
   }
 }
@@ -1154,16 +1199,27 @@ async function activateCompass() {
         let diff = heading - state.smoothedHeading;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
-        // Smart filter: precision when moving, stability when still
-        if (Math.abs(diff) > 1.5) {
-          // More smoothing for small movements (stability), less for large (responsiveness)
-          const factor = Math.abs(diff) > 15 ? 0.3 : 0.15;
-          state.smoothedHeading = (state.smoothedHeading + diff * factor + 360) % 360;
-          state.currentHeading = state.smoothedHeading;
-          // Throttle updates to max 10/second for smoothness
-          if (!state.lastCompassUpdate || Date.now() - state.lastCompassUpdate > 100) {
+        // Use QiblaPrecision module for advanced filtering
+        if (window.QiblaPrecision) {
+          const result = window.QiblaPrecision.processSensorReading(heading, true);
+          state.currentHeading = result.heading;
+          state.signalQuality = result.quality;
+          
+          // Throttle UI updates to ~15Hz (sensor rate)
+          if (!state.lastCompassUpdate || Date.now() - state.lastCompassUpdate > 66) {
             state.lastCompassUpdate = Date.now();
             updateCompass();
+          }
+        } else {
+          // Fallback to basic filter
+          if (Math.abs(diff) > 1.5) {
+            const factor = Math.abs(diff) > 15 ? 0.3 : 0.15;
+            state.smoothedHeading = (state.smoothedHeading + diff * factor + 360) % 360;
+            state.currentHeading = state.smoothedHeading;
+            if (!state.lastCompassUpdate || Date.now() - state.lastCompassUpdate > 100) {
+              state.lastCompassUpdate = Date.now();
+              updateCompass();
+            }
           }
         }
       }
