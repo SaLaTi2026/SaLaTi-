@@ -1144,17 +1144,24 @@ function updateCompass() {
       else if (quality === 'poor') qualityIndicator = ' 🔴 ' + (state.lang === 'ar' ? '(تشويش)' : state.lang === 'fr' ? '(interférence)' : '(noise)');
     }
     
+    // Toggle Kaaba color: grey when not aligned, gold when aligned
+    const kaabaMarker = document.getElementById('kaabaMarker');
+    const compassNeedle = document.getElementById('qiblaNeedle');
+    
     if (aligned) {
       status.textContent = `✅ ${t('aligned')}${qualityIndicator}`;
       status.classList.add('aligned');
+      if (kaabaMarker) kaabaMarker.classList.add('aligned');
+      if (compassNeedle) compassNeedle.classList.add('aligned');
     } else {
-      // Show proximity feedback
       let proximity = '';
       if (alignmentDiff < 10) {
         proximity = state.lang === 'ar' ? ' (قريب)' : state.lang === 'fr' ? ' (proche)' : ' (close)';
       }
       status.textContent = `${t('facingQibla')}${proximity}${qualityIndicator}`;
       status.classList.remove('aligned');
+      if (kaabaMarker) kaabaMarker.classList.remove('aligned');
+      if (compassNeedle) compassNeedle.classList.remove('aligned');
     }
     
     // Show heading with appropriate precision

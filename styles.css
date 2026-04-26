@@ -713,16 +713,53 @@ body {
   height: 56px;
   margin-top: -28px;
   margin-left: -28px;
-  background: linear-gradient(135deg, #0a4d3a, #062d23);
-  border: 3px solid #d4af37;
+  background: linear-gradient(135deg, #6b7b73, #4a5854);
+  border: 3px solid #8a9a93;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 20;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: translate(-50%, -50%); /* Center initially */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translate(-50%, -50%);
+  filter: grayscale(80%) brightness(0.7);
+}
+
+/* When aligned with Qibla - golden glow */
+.kaaba-marker-positioned.aligned {
+  background: linear-gradient(135deg, #0a4d3a, #062d23);
+  border: 3px solid #d4af37;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.7),
+              0 4px 20px rgba(0, 0, 0, 0.4);
+  filter: none;
+  animation: pulse-gold 2s infinite;
+}
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.7),
+                0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(212, 175, 55, 1),
+                0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Arrow color: grey by default, gold when aligned */
+.compass-needle svg path {
+  transition: fill 0.4s ease;
+}
+
+.compass-needle.aligned svg path {
+  fill: url(#needleGrad) !important;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.8));
+}
+
+.compass-needle:not(.aligned) svg path {
+  fill: #8a9a93 !important;
+  opacity: 0.6;
 }
 
 .kaaba-emoji {
