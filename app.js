@@ -562,56 +562,135 @@ const CITY_NAMES_AR = {
 
 // Popular cities for dropdown
 const POPULAR_CITIES_AR = [
-  // Maroc
-  { ar: 'مراكش', en: 'Marrakech' },
-  { ar: 'الدار البيضاء', en: 'Casablanca' },
-  { ar: 'فاس', en: 'Fes' },
-  { ar: 'طنجة', en: 'Tangier' },
-  { ar: 'الرباط', en: 'Rabat' },
-  { ar: 'مكناس', en: 'Meknes' },
-  { ar: 'آسفي', en: 'Safi' },
-  { ar: 'الصويرة', en: 'Essaouira' },
-  // Égypte
-  { ar: 'القاهرة', en: 'Cairo' },
-  { ar: 'الإسكندرية', en: 'Alexandria' },
-  { ar: 'الجيزة', en: 'Giza' },
-  { ar: 'الأقصر', en: 'Luxor' },
-  // Arabie Saoudite
-  { ar: 'مكة', en: 'Mecca' },
-  { ar: 'المدينة', en: 'Medina' },
-  { ar: 'الرياض', en: 'Riyadh' },
-  { ar: 'جدة', en: 'Jeddah' },
-  { ar: 'الدمام', en: 'Dammam' },
-  // Émirats
-  { ar: 'دبي', en: 'Dubai' },
-  { ar: 'أبو ظبي', en: 'Abu Dhabi' },
-  { ar: 'الشارقة', en: 'Sharjah' },
-  // Levant
-  { ar: 'بيروت', en: 'Beirut' },
-  { ar: 'دمشق', en: 'Damascus' },
-  { ar: 'عمّان', en: 'Amman' },
-  { ar: 'القدس', en: 'Jerusalem' },
-  { ar: 'رام الله', en: 'Ramallah' },
-  // Irak
-  { ar: 'بغداد', en: 'Baghdad' },
-  { ar: 'البصرة', en: 'Basra' },
-  { ar: 'الموصل', en: 'Mosul' },
-  // Turquie
-  { ar: 'إسطنبول', en: 'Istanbul' },
-  { ar: 'أنقرة', en: 'Ankara' },
-  { ar: 'إزمير', en: 'Izmir' },
-  // Europe
-  { ar: 'لندن', en: 'London' },
-  { ar: 'باريس', en: 'Paris' },
-  { ar: 'برلين', en: 'Berlin' },
-  { ar: 'مدريد', en: 'Madrid' },
-  // Asie
-  { ar: 'نيويورك', en: 'New York' },
-  { ar: 'طوكيو', en: 'Tokyo' },
-  { ar: 'دلهي', en: 'Delhi' },
-  { ar: 'بانكوك', en: 'Bangkok' },
-  { ar: 'كوالالمبور', en: 'Kuala Lumpur' },
-  { ar: 'جاكرتا', en: 'Jakarta' }
+  // === MAROC ===
+  { ar: 'مراكش', en: 'Marrakech', lat: 31.6295, lng: -7.9811 },
+  { ar: 'الدار البيضاء', en: 'Casablanca', lat: 33.5731, lng: -7.5898 },
+  { ar: 'فاس', en: 'Fes', lat: 34.0181, lng: -5.0078 },
+  { ar: 'طنجة', en: 'Tangier', lat: 35.7595, lng: -5.8340 },
+  { ar: 'الرباط', en: 'Rabat', lat: 34.0209, lng: -6.8416 },
+  { ar: 'مكناس', en: 'Meknes', lat: 33.8935, lng: -5.5473 },
+  { ar: 'أكادير', en: 'Agadir', lat: 30.4278, lng: -9.5981 },
+  { ar: 'وجدة', en: 'Oujda', lat: 34.6814, lng: -1.9086 },
+  { ar: 'تطوان', en: 'Tetouan', lat: 35.5889, lng: -5.3626 },
+  { ar: 'العيون', en: 'Laayoune', lat: 27.1500, lng: -13.2000 },
+  // === ALGÉRIE ===
+  { ar: 'الجزائر', en: 'Algiers', lat: 36.7538, lng: 3.0588 },
+  { ar: 'وهران', en: 'Oran', lat: 35.6911, lng: -0.6417 },
+  { ar: 'قسنطينة', en: 'Constantine', lat: 36.3650, lng: 6.6147 },
+  // === TUNISIE ===
+  { ar: 'تونس', en: 'Tunis', lat: 36.8065, lng: 10.1815 },
+  { ar: 'صفاقس', en: 'Sfax', lat: 34.7406, lng: 10.7603 },
+  // === LIBYE ===
+  { ar: 'طرابلس', en: 'Tripoli', lat: 32.8872, lng: 13.1913 },
+  { ar: 'بنغازي', en: 'Benghazi', lat: 32.1167, lng: 20.0667 },
+  // === ÉGYPTE ===
+  { ar: 'القاهرة', en: 'Cairo', lat: 30.0444, lng: 31.2357 },
+  { ar: 'الإسكندرية', en: 'Alexandria', lat: 31.2001, lng: 29.9187 },
+  { ar: 'الجيزة', en: 'Giza', lat: 30.0131, lng: 31.2089 },
+  { ar: 'الأقصر', en: 'Luxor', lat: 25.6872, lng: 32.6396 },
+  { ar: 'أسوان', en: 'Aswan', lat: 24.0889, lng: 32.8998 },
+  // === ARABIE SAOUDITE ===
+  { ar: 'مكة', en: 'Mecca', lat: 21.4225, lng: 39.8262 },
+  { ar: 'المدينة المنورة', en: 'Medina', lat: 24.4709, lng: 39.6122 },
+  { ar: 'الرياض', en: 'Riyadh', lat: 24.7136, lng: 46.6753 },
+  { ar: 'جدة', en: 'Jeddah', lat: 21.4858, lng: 39.1925 },
+  { ar: 'الدمام', en: 'Dammam', lat: 26.3927, lng: 49.9777 },
+  { ar: 'الطائف', en: 'Taif', lat: 21.2703, lng: 40.4158 },
+  // === ÉMIRATS ARABES UNIS ===
+  { ar: 'دبي', en: 'Dubai', lat: 25.2048, lng: 55.2708 },
+  { ar: 'أبو ظبي', en: 'Abu Dhabi', lat: 24.4539, lng: 54.3773 },
+  { ar: 'الشارقة', en: 'Sharjah', lat: 25.3463, lng: 55.4209 },
+  // === QATAR / KOWEÏT / BAHREIN / OMAN ===
+  { ar: 'الدوحة', en: 'Doha', lat: 25.2854, lng: 51.5310 },
+  { ar: 'الكويت', en: 'Kuwait City', lat: 29.3759, lng: 47.9774 },
+  { ar: 'المنامة', en: 'Manama', lat: 26.2285, lng: 50.5860 },
+  { ar: 'مسقط', en: 'Muscat', lat: 23.5880, lng: 58.3829 },
+  // === LEVANT ===
+  { ar: 'بيروت', en: 'Beirut', lat: 33.8938, lng: 35.5018 },
+  { ar: 'دمشق', en: 'Damascus', lat: 33.5138, lng: 36.2765 },
+  { ar: 'حلب', en: 'Aleppo', lat: 36.2021, lng: 37.1343 },
+  { ar: 'عمّان', en: 'Amman', lat: 31.9454, lng: 35.9284 },
+  { ar: 'القدس', en: 'Jerusalem', lat: 31.7683, lng: 35.2137 },
+  { ar: 'رام الله', en: 'Ramallah', lat: 31.9038, lng: 35.2034 },
+  { ar: 'غزة', en: 'Gaza', lat: 31.5018, lng: 34.4663 },
+  // === IRAK ===
+  { ar: 'بغداد', en: 'Baghdad', lat: 33.3152, lng: 44.3661 },
+  { ar: 'البصرة', en: 'Basra', lat: 30.5085, lng: 47.7804 },
+  { ar: 'الموصل', en: 'Mosul', lat: 36.3489, lng: 43.1577 },
+  { ar: 'النجف', en: 'Najaf', lat: 32.0000, lng: 44.3300 },
+  { ar: 'كربلاء', en: 'Karbala', lat: 32.6160, lng: 44.0225 },
+  // === YÉMEN ===
+  { ar: 'صنعاء', en: 'Sanaa', lat: 15.3694, lng: 44.1910 },
+  { ar: 'عدن', en: 'Aden', lat: 12.7855, lng: 45.0187 },
+  // === SOUDAN ===
+  { ar: 'الخرطوم', en: 'Khartoum', lat: 15.5007, lng: 32.5599 },
+  // === TURQUIE ===
+  { ar: 'إسطنبول', en: 'Istanbul', lat: 41.0082, lng: 28.9784 },
+  { ar: 'أنقرة', en: 'Ankara', lat: 39.9334, lng: 32.8597 },
+  { ar: 'إزمير', en: 'Izmir', lat: 38.4192, lng: 27.1287 },
+  { ar: 'بورصة', en: 'Bursa', lat: 40.1828, lng: 29.0665 },
+  { ar: 'أنطاليا', en: 'Antalya', lat: 36.8969, lng: 30.7133 },
+  // === IRAN ===
+  { ar: 'طهران', en: 'Tehran', lat: 35.6892, lng: 51.3890 },
+  { ar: 'مشهد', en: 'Mashhad', lat: 36.2605, lng: 59.6168 },
+  { ar: 'أصفهان', en: 'Isfahan', lat: 32.6539, lng: 51.6660 },
+  // === PAKISTAN ===
+  { ar: 'كراتشي', en: 'Karachi', lat: 24.8607, lng: 67.0011 },
+  { ar: 'لاهور', en: 'Lahore', lat: 31.5497, lng: 74.3436 },
+  { ar: 'إسلام أباد', en: 'Islamabad', lat: 33.6844, lng: 73.0479 },
+  // === BANGLADESH / INDE ===
+  { ar: 'دكا', en: 'Dhaka', lat: 23.8103, lng: 90.4125 },
+  { ar: 'دلهي', en: 'Delhi', lat: 28.6139, lng: 77.2090 },
+  { ar: 'مومباي', en: 'Mumbai', lat: 19.0760, lng: 72.8777 },
+  { ar: 'كولكاتا', en: 'Kolkata', lat: 22.5726, lng: 88.3639 },
+  { ar: 'حيدر أباد', en: 'Hyderabad', lat: 17.3850, lng: 78.4867 },
+  // === ASIE DU SUD-EST ===
+  { ar: 'كوالالمبور', en: 'Kuala Lumpur', lat: 3.1390, lng: 101.6869 },
+  { ar: 'جاكرتا', en: 'Jakarta', lat: -6.2088, lng: 106.8456 },
+  { ar: 'سورابايا', en: 'Surabaya', lat: -7.2575, lng: 112.7521 },
+  { ar: 'بانكوك', en: 'Bangkok', lat: 13.7563, lng: 100.5018 },
+  { ar: 'مانيلا', en: 'Manila', lat: 14.5995, lng: 120.9842 },
+  { ar: 'سنغافورة', en: 'Singapore', lat: 1.3521, lng: 103.8198 },
+  // === ASIE DE L'EST ===
+  { ar: 'بكين', en: 'Beijing', lat: 39.9042, lng: 116.4074 },
+  { ar: 'شنغهاي', en: 'Shanghai', lat: 31.2304, lng: 121.4737 },
+  { ar: 'طوكيو', en: 'Tokyo', lat: 35.6762, lng: 139.6503 },
+  { ar: 'سيول', en: 'Seoul', lat: 37.5665, lng: 126.9780 },
+  // === EUROPE ===
+  { ar: 'لندن', en: 'London', lat: 51.5074, lng: -0.1278 },
+  { ar: 'باريس', en: 'Paris', lat: 48.8566, lng: 2.3522 },
+  { ar: 'مرسيليا', en: 'Marseille', lat: 43.2965, lng: 5.3698 },
+  { ar: 'ليون', en: 'Lyon', lat: 45.7640, lng: 4.8357 },
+  { ar: 'برلين', en: 'Berlin', lat: 52.5200, lng: 13.4050 },
+  { ar: 'فرانكفورت', en: 'Frankfurt', lat: 50.1109, lng: 8.6821 },
+  { ar: 'مدريد', en: 'Madrid', lat: 40.4168, lng: -3.7038 },
+  { ar: 'برشلونة', en: 'Barcelona', lat: 41.3851, lng: 2.1734 },
+  { ar: 'روما', en: 'Rome', lat: 41.9028, lng: 12.4964 },
+  { ar: 'ميلانو', en: 'Milan', lat: 45.4642, lng: 9.1900 },
+  { ar: 'أمستردام', en: 'Amsterdam', lat: 52.3676, lng: 4.9041 },
+  { ar: 'بروكسل', en: 'Brussels', lat: 50.8503, lng: 4.3517 },
+  { ar: 'فيينا', en: 'Vienna', lat: 48.2082, lng: 16.3738 },
+  { ar: 'ستوكهولم', en: 'Stockholm', lat: 59.3293, lng: 18.0686 },
+  { ar: 'موسكو', en: 'Moscow', lat: 55.7558, lng: 37.6173 },
+  // === AMÉRIQUE DU NORD ===
+  { ar: 'نيويورك', en: 'New York', lat: 40.7128, lng: -74.0060 },
+  { ar: 'لوس أنجلوس', en: 'Los Angeles', lat: 34.0522, lng: -118.2437 },
+  { ar: 'شيكاغو', en: 'Chicago', lat: 41.8781, lng: -87.6298 },
+  { ar: 'هيوستن', en: 'Houston', lat: 29.7604, lng: -95.3698 },
+  { ar: 'مونتريال', en: 'Montreal', lat: 45.5017, lng: -73.5673 },
+  { ar: 'تورنتو', en: 'Toronto', lat: 43.6532, lng: -79.3832 },
+  // === AFRIQUE ===
+  { ar: 'لاغوس', en: 'Lagos', lat: 6.5244, lng: 3.3792 },
+  { ar: 'كانو', en: 'Kano', lat: 12.0022, lng: 8.5920 },
+  { ar: 'داكار', en: 'Dakar', lat: 14.7167, lng: -17.4677 },
+  { ar: 'باماكو', en: 'Bamako', lat: 12.6392, lng: -8.0029 },
+  { ar: 'نواكشوط', en: 'Nouakchott', lat: 18.0735, lng: -15.9582 },
+  { ar: 'أديس أبابا', en: 'Addis Ababa', lat: 9.1450, lng: 38.7651 },
+  { ar: 'نيروبي', en: 'Nairobi', lat: -1.2921, lng: 36.8219 },
+  { ar: 'جوهانسبرغ', en: 'Johannesburg', lat: -26.2041, lng: 28.0473 },
+  // === AUSTRALIE ===
+  { ar: 'سيدني', en: 'Sydney', lat: -33.8688, lng: 151.2093 },
+  { ar: 'ملبورن', en: 'Melbourne', lat: -37.8136, lng: 144.9631 }
 ];
 
 const CITY_NAMES_ES = {
@@ -1507,8 +1586,8 @@ function attachEvents() {
   cityDropdown.className = 'cities-dropdown hidden';
   cityDropdown.innerHTML = `
     <div class="cities-list">
-      ${POPULAR_CITIES_AR.map(city => `
-        <button class="city-btn" data-city="${city.en}">
+      ${POPULAR_CITIES_AR.map((city, i) => `
+        <button class="city-btn" data-city="${city.en}" data-idx="${i}" data-lat="${city.lat}" data-lng="${city.lng}">
           ${state.lang === 'ar' ? city.ar : city.en}
         </button>
       `).join('')}
@@ -1634,9 +1713,17 @@ function attachEvents() {
   $$('.city-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const cityName = btn.dataset.city;
+      const lat = parseFloat(btn.dataset.lat);
+      const lng = parseFloat(btn.dataset.lng);
       $('#cityInput').value = cityName;
       $('#citiesDropdown').classList.add('hidden');
-      $('#searchCityBtn').click();
+      
+      // Use direct coordinates if available (instant!)
+      if (!isNaN(lat) && !isNaN(lng)) {
+        await setLocation({ lat, lng, name: cityName });
+      } else {
+        $('#searchCityBtn').click();
+      }
     });
   });
 
