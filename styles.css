@@ -707,11 +707,12 @@ body {
 
 .kaaba-marker-positioned {
   position: absolute;
-  top: -10px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
   width: 56px;
   height: 56px;
+  margin-top: -28px;
+  margin-left: -28px;
   background: linear-gradient(135deg, #0a4d3a, #062d23);
   border: 3px solid #d4af37;
   border-radius: 50%;
@@ -720,6 +721,8 @@ body {
   justify-content: center;
   z-index: 20;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translate(-50%, -50%); /* Center initially */
 }
 
 .kaaba-emoji {

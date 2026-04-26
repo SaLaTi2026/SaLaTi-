@@ -1057,6 +1057,8 @@ function renderQibla() {
 
   renderCompassTicks();
   updateCompass();
+  // Force initial positioning
+  setTimeout(updateCompass, 100);
 }
 
 function renderCompassTicks() {
@@ -1084,7 +1086,31 @@ function updateCompass() {
   // Aiguille reste pointée vers qibla - orientation actuelle
   const needleAngle = state.qiblaAngle - (state.compassActive ? state.currentHeading : 0);
   needle.style.transform = `rotate(${needleAngle}deg)`;
-  // Kaaba is FIXED at top - doesn't move
+  
+  // Position Kaaba on the circle edge at REAL geographic Qibla angle
+  // The Kaaba moves with the dial rotation to stay at its TRUE direction
+  const kaabaMarker = document.getElementById('kaabaMarker');
+  if (kaabaMarker && state.qiblaAngle !== null) {
+    const compassDial = document.querySelector('.compass-dial');
+    if (compassDial) {
+      const rect = compassDial.getBoundingClientRect();
+      const radius = (rect.width / 2) - 28; // Circle radius minus marker half-size
+      
+      // The Kaaba should be at qiblaAngle minus current heading
+      // So when phone rotates, dial rotates, Kaaba stays at TRUE direction
+      const visualAngle = state.compassActive ? 
+        (state.qiblaAngle - state.currentHeading) : 
+        state.qiblaAngle;
+      
+      // Convert to radians (0° = top, 90° = right)
+      const angleRad = (visualAngle - 90) * Math.PI / 180;
+      
+      const x = Math.cos(angleRad) * radius;
+      const y = Math.sin(angleRad) * radius;
+      
+      kaabaMarker.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+    }
+  }
 
   // Direction is already shown in #qiblaAngle - no duplicate
   
