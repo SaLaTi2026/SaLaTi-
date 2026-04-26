@@ -2,8 +2,8 @@
    SALATI - Service Worker
    Stratégie: Cache First pour assets, Network First pour API
    ========================================================= */
-
-const VERSION = 'salati-v1.0.0';
+// const VERSION = 'salati-v1.0.0';
+const VERSION = 'salati-v1.0.1'; // Force nouvelle version
 const STATIC_CACHE = `${VERSION}-static`;
 const DYNAMIC_CACHE = `${VERSION}-dynamic`;
 const API_CACHE = `${VERSION}-api`;
