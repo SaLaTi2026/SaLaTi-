@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0a4d3a">
+  <meta name="description" content="Application musulmane : heures de prières, Adhan multiple (Marocain, La Mecque, Médine, Égyptien), calendrier Hégirien, Qibla GPS et Douaas.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Salati">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <title>Salati - Prières, Adhan & Qibla</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Écran de démarrage -->
+  <div id="splash" class="splash">
+    <div class="splash-content">
+      <div class="splash-logo">
+        <svg viewBox="0 0 100 100" width="120" height="120" aria-hidden="true">
+          <defs>
+            <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f0cd5a"/>
+              <stop offset="100%" stop-color="#d4af37"/>
+            </linearGradient>
+          </defs>
+          <!-- Étoile 8 branches -->
+          <path d="M50 5 L58 25 L78 20 L73 40 L93 48 L73 56 L78 76 L58 71 L50 91 L42 71 L22 76 L27 56 L7 48 L27 40 L22 20 L42 25 Z"
+                fill="rgba(255,255,255,0.15)"/>
+          <!-- Base -->
+          <rect x="28" y="62" width="44" height="20" fill="#faf5e6"/>
+          <!-- Dôme -->
+          <path d="M32 62 Q32 40 50 40 Q68 40 68 62 Z" fill="url(#goldGrad)"/>
+          <!-- Minarets -->
+          <rect x="20" y="52" width="5" height="30" fill="#faf5e6"/>
+          <rect x="75" y="52" width="5" height="30" fill="#faf5e6"/>
+          <polygon points="20,52 25,52 22.5,46" fill="url(#goldGrad)"/>
+          <polygon points="75,52 80,52 77.5,46" fill="url(#goldGrad)"/>
+          <!-- Croissant -->
+          <circle cx="50" cy="32" r="5" fill="url(#goldGrad)"/>
+          <circle cx="52" cy="31" r="4.2" fill="#0a4d3a"/>
+          <!-- Porte -->
+          <path d="M45 82 L45 72 Q45 68 50 68 Q55 68 55 72 L55 82 Z" fill="#0a4d3a"/>
+        </svg>
+      </div>
+      <h1 class="splash-title" id="splashTitle">Salati</h1>
+      <p class="splash-subtitle">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      <div class="splash-loader"></div>
+    </div>
+  </div>
+
+  <!-- Set splash title based on language -->
+  <script>
+    const savedLang = localStorage.getItem('salati_lang') || 'fr';
+    const splashTitle = document.getElementById('splashTitle');
+    if (splashTitle) {
+      splashTitle.textContent = savedLang === 'ar' ? 'صلاتي' : 'Salati';
+    }
+  </script>
+
+  <!-- Application -->
+  <div id="app" class="app hidden">
+
+    <!-- En-tête -->
+    <header class="header">
+      <div class="header-top">
+        <div class="header-logo">
+          <svg viewBox="0 0 100 100" width="32" height="32" aria-hidden="true">
+            <rect x="28" y="62" width="44" height="20" fill="#faf5e6"/>
+            <path d="M32 62 Q32 40 50 40 Q68 40 68 62 Z" fill="#d4af37"/>
+            <rect x="20" y="52" width="5" height="30" fill="#faf5e6"/>
+            <rect x="75" y="52" width="5" height="30" fill="#faf5e6"/>
+            <circle cx="50" cy="32" r="5" fill="#d4af37"/>
+            <circle cx="52" cy="31" r="4.2" fill="#0a4d3a"/>
+          </svg>
+          <span class="header-title" data-i18n="appName">Salati</span>
+        </div>
+        <div class="header-actions">
+          <select id="langSelect" class="lang-select" aria-label="Langue">
+            <option value="fr">🇫🇷 FR</option>
+            <option value="ar">🇸🇦 AR</option>
+            <option value="en">🇬🇧 EN</option>
+            <option value="es">🇪🇸 ES</option>
+            <option value="tr">🇹🇷 TR</option>
+          </select>
+          <button id="settingsBtn" class="icon-btn" aria-label="Paramètres">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65c-.04-.24-.24-.42-.49-.42h-4c-.25 0-.45.18-.49.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.24.42.49.42h4c.25 0 .45-.18.49-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bandeau principal avec date -->
+      <div class="hero">
+        <div class="hero-date">
+          <div class="hero-hijri" id="hijriDate">—</div>
+          <div class="hero-gregorian" id="gregorianDate">—</div>
+          <div class="hero-location" id="locationText">📍 <span>Localisation...</span></div>
+        </div>
+        <div class="hero-next">
+          <div class="next-label" data-i18n="nextPrayer">Prochaine prière</div>
+          <div class="next-name" id="nextPrayerName">—</div>
+          <div class="next-countdown" id="countdown">--:--:--</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation onglets -->
+    <nav class="tabs">
+      <button class="tab active" data-view="prayers">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2m4.2 14.2L11 13V7h1.5v5.2l4.5 2.7Z"/></svg>
+        <span data-i18n="prayers">Prières</span>
+      </button>
+      <button class="tab" data-view="qibla">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="m14.5 12 -2.5 5 -2.5-5L12 7zM12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2m0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8"/></svg>
+        <span data-i18n="qibla">Qibla</span>
+      </button>
+      <button class="tab" data-view="calendar">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m0 16H5V8h14Z"/></svg>
+        <span data-i18n="calendar">Hégirien</span>
+      </button>
+      <button class="tab" data-view="duas">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 21.35 10.55 20C5.4 15.36 2 12.28 2 8.5A5.5 5.5 0 0 1 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3A5.5 5.5 0 0 1 22 8.5c0 3.78-3.4 6.86-8.55 11.54Z"/></svg>
+        <span data-i18n="duas">Douaas</span>
+      </button>
+    </nav>
+
+    <!-- Vues -->
+    <main class="main">
+
+      <!-- Vue Prières -->
+      <section class="view active" id="view-prayers">
+        <div class="prayers-list" id="prayersList">
+          <!-- Rempli dynamiquement -->
+        </div>
+
+        <div class="card">
+          <h3 class="card-title" data-i18n="adhanSettings">Voix de l'Adhan</h3>
+          <p class="card-sub" data-i18n="adhanSub">Choisissez le muezzin qui récite l'appel à la prière.</p>
+          <select id="adhanSelect" class="select-full">
+            <option value="morocco">🇲🇦 Adhan Marocain (Hassan II)</option>
+            <option value="mecca">🕋 La Mecque (Masjid Al-Haram)</option>
+            <option value="madina">🕌 Médine (Masjid An-Nabawi)</option>
+            <option value="egypt">🇪🇬 Adhan Égyptien</option>
+            <option value="turkey">🇹🇷 Adhan Turc</option>
+            <option value="alaqsa">🇵🇸 Al-Aqsa (Jérusalem)</option>
+            <option value="none">🔕 Aucun son (notification seulement)</option>
+          </select>
+          <button class="btn-secondary" id="testAdhanBtn">
+            <span data-i18n="testAdhan">▶ Tester l'Adhan</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title" data-i18n="calcMethod">Méthode de calcul</h3>
+          <select id="methodSelect" class="select-full">
+            <option value="21">🇲🇦 Ministère Habous - Maroc</option>
+            <option value="5">🇪🇬 Autorité Égyptienne</option>
+            <option value="4">🕋 Umm al-Qura - La Mecque</option>
+            <option value="3">🕌 Muslim World League</option>
+            <option value="2">🇺🇸 ISNA - Amérique du Nord</option>
+            <option value="1">🇵🇰 Karachi</option>
+            <option value="8">🇦🇪 Gulf Region</option>
+            <option value="9">🇰🇼 Kuwait</option>
+            <option value="10">🇶🇦 Qatar</option>
+            <option value="12">🇫🇷 Union des Musulmans de France</option>
+            <option value="13">🇹🇷 Diyanet - Turquie</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Vue Qibla -->
+      <section class="view" id="view-qibla">
+        <div class="qibla-container">
+          <div class="qibla-card">
+            <div class="compass-wrapper">
+              <div class="compass" id="compass">
+                <!-- Cadran -->
+                <div class="compass-dial">
+                  <span class="compass-cardinal north">N</span>
+                  <span class="compass-cardinal east">E</span>
+                  <span class="compass-cardinal south">S</span>
+                  <span class="compass-cardinal west">W</span>
+                  <!-- Graduations -->
+                  <div class="compass-ticks" id="compassTicks"></div>
+                </div>
+                <!-- Aiguille Qibla -->
+                <div class="compass-needle" id="qiblaNeedle">
+                  <svg viewBox="0 0 60 200" width="60" height="200" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="needleGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#f0cd5a"/>
+                        <stop offset="100%" stop-color="#d4af37"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M30 0 L45 40 L30 30 L15 40 Z" fill="url(#needleGrad)"/>
+                    <circle cx="30" cy="100" r="12" fill="#0a4d3a" stroke="#d4af37" stroke-width="2"/>
+                    <text x="30" y="105" text-anchor="middle" fill="#d4af37" font-size="16" font-weight="bold">🕋</text>
+                    <line x1="30" y1="35" x2="30" y2="90" stroke="#d4af37" stroke-width="2"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="qibla-info">
+              <div class="qibla-row">
+                <span data-i18n="direction">Direction Qibla</span>
+                <strong id="qiblaAngle">—°</strong>
+              </div>
+              <div class="qibla-row">
+                <span data-i18n="distance">Distance Kaaba</span>
+                <strong id="qiblaDistance">— km</strong>
+              </div>
+              <div class="qibla-row">
+                <span data-i18n="heading">Orientation téléphone</span>
+                <strong id="deviceHeading">—°</strong>
+              </div>
+              <div class="qibla-status" id="qiblaStatus" data-i18n="qiblaStatusInit">
+                Appuyez sur "Activer" pour utiliser la boussole
+              </div>
+            </div>
+            <button class="btn-primary" id="activateQiblaBtn" data-i18n="activateCompass">
+              🧭 Activer la boussole
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vue Calendrier -->
+      <section class="view" id="view-calendar">
+        <div class="card">
+          <h3 class="card-title" data-i18n="hijriAdjust">Ajustement du calendrier Hégirien</h3>
+          <p class="card-sub" data-i18n="hijriAdjustSub">
+            Ajustez de ±1 ou ±2 jours selon l'observation lunaire locale.
+          </p>
+          <div class="adjust-control">
+            <button class="adjust-btn" data-adjust="-2">−2</button>
+            <button class="adjust-btn" data-adjust="-1">−1</button>
+            <div class="adjust-value">
+              <span id="hijriAdjustValue">0</span>
+              <small data-i18n="days">jours</small>
+            </div>
+            <button class="adjust-btn" data-adjust="+1">+1</button>
+            <button class="adjust-btn" data-adjust="+2">+2</button>
+          </div>
+          <button class="btn-secondary" id="resetAdjustBtn" data-i18n="reset">↺ Réinitialiser</button>
+        </div>
+
+        <div class="card">
+          <div class="calendar-header">
+            <button class="cal-nav" id="prevMonthBtn" aria-label="Mois précédent">‹</button>
+            <div class="calendar-title">
+              <div id="calHijriMonth">—</div>
+              <small id="calGregMonth">—</small>
+            </div>
+            <button class="cal-nav" id="nextMonthBtn" aria-label="Mois suivant">›</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid">
+            <!-- Rempli dynamiquement -->
+          </div>
+          <div class="calendar-legend">
+            <span class="legend-dot today"></span> <span data-i18n="today">Aujourd'hui</span>
+            <span class="legend-dot event"></span> <span data-i18n="importantDate">Date importante</span>
+          </div>
+        </div>
+
+        <div class="card" id="importantDatesCard">
+          <h3 class="card-title" data-i18n="islamicDates">Dates islamiques importantes</h3>
+          <ul class="dates-list" id="importantDates"></ul>
+        </div>
+      </section>
+
+      <!-- Vue Douaas -->
+      <section class="view" id="view-duas">
+        <div class="dua-filter">
+          <button class="filter-btn active" data-filter="all" data-i18n="all">Toutes</button>
+          <button class="filter-btn" data-filter="daily" data-i18n="daily">Quotidiennes</button>
+          <button class="filter-btn" data-filter="prayer" data-i18n="prayerDuas">Prières</button>
+          <button class="filter-btn" data-filter="protection" data-i18n="protection">Protection</button>
+        </div>
+        <div id="duasList" class="duas-list">
+          <!-- Rempli dynamiquement -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal paramètres -->
+    <div class="modal hidden" id="settingsModal">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 data-i18n="settings">Paramètres</h2>
+          <button class="icon-btn" id="closeSettingsBtn" aria-label="Fermer">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="setting-group">
+            <label data-i18n="location">Localisation</label>
+            <button class="btn-secondary" id="detectLocationBtn">
+              📍 <span data-i18n="detectGPS">Détecter ma position (GPS)</span>
+            </button>
+            <input type="text" id="cityInput" placeholder="Ou entrer une ville..." class="input-full">
+            <button class="btn-secondary" id="searchCityBtn" data-i18n="searchCity">🔍 Rechercher</button>
+          </div>
+
+          <div class="setting-group">
+            <label data-i18n="notifications">Notifications</label>
+            <div class="switch-row">
+              <span data-i18n="enableNotif">Activer les notifications d'Adhan</span>
+              <label class="switch">
+                <input type="checkbox" id="notifToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <button class="btn-secondary" id="enableNotifBtn" data-i18n="requestPermission">
+              🔔 Autoriser les notifications
+            </button>
+          </div>
+
+          <div class="setting-group">
+            <label data-i18n="prayerAdjust">Ajustement heures de prière (min)</label>
+            <div class="prayer-adjust-list" id="prayerAdjustList"></div>
+          </div>
+
+          <div class="setting-group">
+            <label data-i18n="about">À propos</label>
+            <p class="about-text">
+              Salati v1.0 · Application gratuite et open source<br>
+              Sources: AlAdhan API, Prayer Times calculations<br>
+              <small>بارك الله فيكم</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden"></div>
+
+    <!-- Audio pour Adhan -->
+    <audio id="adhanAudio" preload="none"></audio>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Enregistrement du Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('✓ Service Worker enregistré:', reg.scope))
+          .catch(err => console.error('✗ SW erreur:', err));
+      });
+    }
+  </script>
+
+  <!-- PATCH COMPLET SALATI - TOUS LES FIXES -->
+  <script>
+    // MOIS ARABES
+    const HIJRI_MONTHS_AR = ['محرم', 'صفر', 'ربيع الأول', 'ربيع الثاني', 'جمادى الأولى', 'جمادى الثانية', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'];
+
+    // FIX 1: Mois en arabe
+    setTimeout(() => {
+      const originalRenderHijri = window.renderHijriToday;
+      window.renderHijriToday = function() {
+        if (!window.state) return;
+        const today = new Date();
+        const h = gregorianToHijri(today);
+        window.state.hijriToday = h;
+        
+        const monthName = window.state.lang === 'ar' ? HIJRI_MONTHS_AR[h.month - 1] : (window.HIJRI_MONTHS ? window.HIJRI_MONTHS[h.month - 1] : h.month);
+        const hijriLabel = `${h.day} ${monthName} ${h.year}`;
+        document.getElementById('hijriDate').textContent = hijriLabel;
+        
+        const greg = today.toLocaleDateString(window.state.lang === 'ar' ? 'ar' : window.state.lang, {
+          weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+        });
+        document.getElementById('gregorianDate').textContent = greg;
+      };
+      if (typeof window.renderHijriToday === 'function') window.renderHijriToday();
+    }, 1000);
+
+    // FIX 2: Countdown en temps réel
+    const updateCountdown = () => {
+      if (!window.state || !window.state.nextPrayer) return;
+      const now = new Date();
+      let target = new Date(window.state.nextPrayer.date);
+      if (target < now) target.setDate(target.getDate() + 1);
+      
+      const diff = Math.max(0, target - now);
+      let countdown = '';
+      if (diff > 0) {
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        countdown = h > 0 ? `-${h}H ${m}M ${s}S` : m > 0 ? `-${m}M ${s}S` : `-${s}S`;
+      }
+      
+      const countdownEl = document.getElementById('countdown');
+      if (countdownEl) countdownEl.textContent = countdown;
+    };
+    setInterval(updateCountdown, 1000);
+    setTimeout(updateCountdown, 1500);
+
+    // FIX 3: Direction Qibla avec cardinal
+    setTimeout(() => {
+      const CARDINAL = {
+        ar: { 0: 'الشمال', 1: 'الشرق', 2: 'الجنوب', 3: 'الغرب' },
+        fr: { 0: 'Nord', 1: 'Est', 2: 'Sud', 3: 'Ouest' },
+        en: { 0: 'North', 1: 'East', 2: 'South', 3: 'West' }
+      };
+      
+      const originalRenderQibla = window.renderQibla;
+      window.renderQibla = function() {
+        if (!window.state || !window.state.location) {
+          document.getElementById('qiblaAngle').textContent = '—°';
+          document.getElementById('qiblaDistance').textContent = '— km';
+          return;
+        }
+        
+        const angle = calculateQibla(window.state.location.lat, window.state.location.lng);
+        window.state.qiblaAngle = angle;
+        const dist = haversineKm(window.state.location.lat, window.state.location.lng, window.KAABA.lat, window.KAABA.lng);
+        
+        const idx = Math.round(((angle % 360) / 90)) % 4;
+        const cardinal = CARDINAL[window.state.lang]?.[idx] || CARDINAL.fr[idx];
+        document.getElementById('qiblaAngle').textContent = `${angle.toFixed(1)}° (${cardinal})`;
+        document.getElementById('qiblaDistance').textContent = `${Math.round(dist).toLocaleString()} km`;
+        
+        if (typeof renderCompassTicks === 'function') renderCompassTicks();
+        if (typeof updateCompass === 'function') updateCompass();
+      };
+      if (typeof window.renderQibla === 'function') window.renderQibla();
+    }, 1000);
+
+    // FIX 4: Suggestions villes
+    setTimeout(() => {
+      const CITIES = [
+        { fr: 'Marrakech', ar: 'مراكش', en: 'Marrakech' },
+        { fr: 'Casablanca', ar: 'الدار البيضاء', en: 'Casablanca' },
+        { fr: 'Cairo', ar: 'القاهرة', en: 'Cairo' },
+        { fr: 'Mecca', ar: 'مكة', en: 'Mecca' },
+        { fr: 'Dubai', ar: 'دبي', en: 'Dubai' },
+        { fr: 'Istanbul', ar: 'إسطنبول', en: 'Istanbul' }
+      ];
+      
+      const cityInput = document.getElementById('cityInput');
+      if (!cityInput) return;
+      
+      let dropdownEl = document.getElementById('citiesSuggestions');
+      if (!dropdownEl) {
+        dropdownEl = document.createElement('div');
+        dropdownEl.id = 'citiesSuggestions';
+        dropdownEl.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:white;border:1px solid #e0e7ff;border-radius:0 0 12px 12px;max-height:200px;overflow-y:auto;z-index:100;display:none;';
+        cityInput.parentElement.style.position = 'relative';
+        cityInput.parentElement.appendChild(dropdownEl);
+      }
+      
+      cityInput.addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        if (q.length < 1) {
+          dropdownEl.style.display = 'none';
+          return;
+        }
+        
+        const filtered = CITIES.filter(c => c.fr.toLowerCase().includes(q) || c.ar.includes(q) || c.en.toLowerCase().includes(q));
+        if (filtered.length === 0) { dropdownEl.style.display = 'none'; return; }
+        
+        const lang = window.state.lang;
+        dropdownEl.innerHTML = filtered.map(c => `<button style="display:block;width:100%;padding:12px;background:none;border:none;border-bottom:1px solid #f0f0f0;text-align:left;cursor:pointer;" data-city="${c.fr}">${c[lang] || c.fr}</button>`).join('');
+        dropdownEl.style.display = 'block';
+        
+        dropdownEl.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            cityInput.value = btn.dataset.city;
+            dropdownEl.style.display = 'none';
+            document.getElementById('searchCityBtn').click();
+          });
+        });
+      });
+    }, 500);
+
+    console.log('✅ Salati patches applied');
+  </script>
+
+  <style>
+    .countdown { font-size: 12px; color: var(--gold-400); margin-top: 4px; font-family: monospace; opacity: 0.8; }
+  </style>
+</body>
+</html>
