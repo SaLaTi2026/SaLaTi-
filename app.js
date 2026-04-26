@@ -1145,8 +1145,21 @@ async function activateCompass() {
         headingReceived = true;
         toast('✅ Boussole OK', 'success');
       }
-      state.currentHeading = heading;
-      updateCompass();
+      // Smoothing filter to stabilize compass (low-pass filter)
+      if (state.smoothedHeading === undefined) {
+        state.smoothedHeading = heading;
+      } else {
+        // Handle 360°/0° wrap-around
+        let diff = heading - state.smoothedHeading;
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+        // Only update if change is significant (> 4°) to filter noise/tremblement
+        if (Math.abs(diff) > 4) {
+          state.smoothedHeading = (state.smoothedHeading + diff * 0.1 + 360) % 360;
+          state.currentHeading = state.smoothedHeading;
+          updateCompass();
+        }
+      }
     }
   };
 
