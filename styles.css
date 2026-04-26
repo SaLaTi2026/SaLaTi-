@@ -705,13 +705,14 @@ body {
   padding-top: 50px; /* Space for Kaaba marker */
 }
 
-.kaaba-marker-fixed {
+.kaaba-marker-positioned {
   position: absolute;
-  top: -10px;
+  width: 50px;
+  height: 50px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 60px;
+  margin-top: -25px;
+  margin-left: -25px;
   background: linear-gradient(135deg, #0a4d3a, #062d23);
   border: 3px solid #d4af37;
   border-radius: 50%;
@@ -719,7 +720,10 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 20;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  /* Initial position - will be updated by JS based on Qibla angle */
+  transform: translate(0, -45vw);  /* Will be overridden */
+  transition: transform 0.5s ease-out;
 }
 
 .kaaba-emoji {

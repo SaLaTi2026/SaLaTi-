@@ -1057,6 +1057,31 @@ function renderQibla() {
 
   renderCompassTicks();
   updateCompass();
+  positionKaabaMarker();
+}
+
+/**
+ * Position the Kaaba marker on the edge of the compass circle
+ * at the angle corresponding to the Qibla direction
+ */
+function positionKaabaMarker() {
+  const marker = document.getElementById('kaabaMarker');
+  if (!marker || state.qiblaAngle === null) return;
+  
+  const compass = document.querySelector('.compass-dial');
+  if (!compass) return;
+  
+  const rect = compass.getBoundingClientRect();
+  const radius = rect.width / 2 - 25; // Cercle radius minus marker half-size
+  
+  // Convert angle to radians (0° = North = up)
+  // In compass: 0° North, 90° East, 180° South, 270° West
+  const angleRad = (state.qiblaAngle - 90) * Math.PI / 180; // -90 because we start from top
+  
+  const x = Math.cos(angleRad) * radius;
+  const y = Math.sin(angleRad) * radius;
+  
+  marker.style.transform = `translate(${x}px, ${y}px)`;
 }
 
 function renderCompassTicks() {
@@ -1084,6 +1109,25 @@ function updateCompass() {
   // Aiguille reste pointée vers qibla - orientation actuelle
   const needleAngle = state.qiblaAngle - (state.compassActive ? state.currentHeading : 0);
   needle.style.transform = `rotate(${needleAngle}deg)`;
+  
+  // Also update Kaaba position if compass dial rotated
+  if (state.compassActive) {
+    const marker = document.getElementById('kaabaMarker');
+    if (marker && state.qiblaAngle !== null) {
+      // Kaaba should rotate with the dial
+      const compassDial = document.querySelector('.compass-dial');
+      if (compassDial) {
+        const rect = compassDial.getBoundingClientRect();
+        const radius = rect.width / 2 - 25;
+        // Adjust for current heading - Kaaba moves opposite to dial rotation
+        const adjustedAngle = state.qiblaAngle - state.currentHeading;
+        const angleRad = (adjustedAngle - 90) * Math.PI / 180;
+        const x = Math.cos(angleRad) * radius;
+        const y = Math.sin(angleRad) * radius;
+        marker.style.transform = `translate(${x}px, ${y}px)`;
+      }
+    }
+  }
 
   // Direction is already shown in #qiblaAngle - no duplicate
   
