@@ -1425,3 +1425,50 @@ html[dir="rtl"] .city-btn {
   .hero-hijri { font-size: 26px; }
   .next-name { font-size: 22px; }
 }
+
+/* ===== QIBLA ALIGNMENT VISUAL FEEDBACK ===== */
+/* Default state: GRAYSCALE (not aligned) */
+.kaaba-marker-positioned {
+  filter: grayscale(85%) opacity(0.6);
+  transition: filter 0.4s ease, transform 0.4s ease;
+}
+
+.compass-needle {
+  filter: grayscale(85%) opacity(0.6);
+  transition: filter 0.4s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Aligned state: FULL COLOR + GLOW */
+.kaaba-marker-positioned.aligned {
+  filter: grayscale(0%) opacity(1) drop-shadow(0 0 12px #d4af37);
+  animation: kaabaPulse 1.5s ease-in-out infinite;
+}
+
+.compass-needle.aligned {
+  filter: grayscale(0%) opacity(1) drop-shadow(0 0 8px #d4af37);
+}
+
+/* Pulse animation when aligned */
+@keyframes kaabaPulse {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 4px 24px rgba(212, 175, 55, 0.7);
+  }
+}
+
+/* Status indicator pulse when aligned */
+.qibla-status.aligned {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(212, 175, 55, 0.15));
+  color: var(--success);
+  font-weight: 600;
+  animation: statusGlow 2s ease-in-out infinite;
+}
+
+@keyframes statusGlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
