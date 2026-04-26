@@ -830,7 +830,7 @@ function renderPrayers() {
         </div>
         <div class="prayer-time">
           <div>${p.time}</div>
-          ${countdown ? `<div class="countdown">${countdown}</div>` : ''}
+          ${countdown ? `<div class="countdown" dir="ltr">${countdown}</div>` : ''}
         </div>
         ${showBell ? `<button class="prayer-bell ${alertOn ? 'on' : ''}" data-prayer="${p.key}" aria-label="Alerte">
           ${alertOn ? '🔔' : '🔕'}
@@ -876,6 +876,7 @@ function updateNextPrayer() {
     countdown = `-${s}S`;
   }
   $('#countdown').textContent = countdown;
+  $('#countdown').dir = 'ltr';
   
   // Update ALL countdown elements in prayer items
   const countdownEls = $$('.countdown');
@@ -1519,7 +1520,9 @@ function attachEvents() {
     });
   });
 
-  // INSTANT CITY SUGGESTIONS - Filter as user types
+  // INSTANT CITY SUGGESTIONS - Local + International search
+  let searchTimeout = null;
+  
   $('#cityInput').addEventListener('input', (e) => {
     const query = e.target.value.trim().toLowerCase();
     const dropdown = $('#citiesDropdown');
@@ -1530,26 +1533,84 @@ function attachEvents() {
         btn.style.display = 'block';
         const city = POPULAR_CITIES_AR[idx];
         btn.textContent = state.lang === 'ar' ? city.ar : city.en;
+        btn.dataset.intl = '';
       });
+      // Remove any international results
+      $$('.city-btn-intl').forEach(btn => btn.remove());
       dropdown.classList.remove('hidden');
-    } else {
-      // Filter cities by name
-      $$('.city-btn').forEach((btn, idx) => {
-        const city = POPULAR_CITIES_AR[idx];
-        const cityName = state.lang === 'ar' ? city.ar : city.en;
-        const matches = cityName.toLowerCase().includes(query) || 
-                       city.en.toLowerCase().includes(query) ||
-                       city.ar.includes(query);
-        btn.style.display = matches ? 'block' : 'none';
-        btn.textContent = cityName;
-      });
-      // Show dropdown if there are matches
-      const hasVisible = $$('.city-btn').some(btn => btn.style.display !== 'none');
-      if (hasVisible) {
-        dropdown.classList.remove('hidden');
-      } else {
-        dropdown.classList.add('hidden');
+      return;
+    }
+    
+    // Filter local popular cities first
+    let hasLocalMatch = false;
+    $$('.city-btn').forEach((btn, idx) => {
+      if (btn.dataset.intl) {
+        btn.remove();
+        return;
       }
+      const city = POPULAR_CITIES_AR[idx];
+      if (!city) return;
+      const cityName = state.lang === 'ar' ? city.ar : city.en;
+      const matches = cityName.toLowerCase().includes(query) || 
+                     city.en.toLowerCase().includes(query) ||
+                     city.ar.includes(query);
+      btn.style.display = matches ? 'block' : 'none';
+      btn.textContent = cityName;
+      if (matches) hasLocalMatch = true;
+    });
+    
+    // Remove old international results
+    $$('.city-btn-intl').forEach(btn => btn.remove());
+    
+    dropdown.classList.remove('hidden');
+    
+    // Search international cities via Nominatim (debounced)
+    if (query.length >= 3) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async () => {
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&featuretype=city&addressdetails=1`,
+            { headers: { 'Accept-Language': state.lang === 'ar' ? 'ar' : 'en' } }
+          );
+          if (!response.ok) return;
+          const results = await response.json();
+          
+          // Add international results to dropdown
+          results.forEach(result => {
+            // Skip if already in popular cities
+            const cityName = result.display_name.split(',')[0].trim();
+            const lat = parseFloat(result.lat);
+            const lng = parseFloat(result.lon);
+            
+            // Check if already shown
+            const alreadyShown = Array.from($$('.city-btn'))
+              .some(btn => btn.style.display !== 'none' && 
+                          btn.textContent.toLowerCase().includes(cityName.toLowerCase()));
+            if (alreadyShown) return;
+            
+            const btn = document.createElement('button');
+            btn.className = 'city-btn city-btn-intl';
+            btn.textContent = `🌍 ${cityName}`;
+            btn.title = result.display_name;
+            btn.dataset.intl = '1';
+            btn.dataset.lat = lat;
+            btn.dataset.lng = lng;
+            btn.dataset.name = cityName;
+            
+            btn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              $('#cityInput').value = cityName;
+              dropdown.classList.add('hidden');
+              await setLocation({ lat, lng, name: cityName });
+            });
+            
+            dropdown.appendChild(btn);
+          });
+        } catch (err) {
+          console.warn('[Search] International search failed:', err);
+        }
+      }, 400); // 400ms debounce
     }
   });
   
