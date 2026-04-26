@@ -1565,38 +1565,40 @@ function attachEvents() {
     dropdown.classList.remove('hidden');
     
     // Search international cities via Nominatim (debounced)
-    if (query.length >= 3) {
+    if (query.length >= 2) {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(async () => {
         try {
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&featuretype=city&addressdetails=1`,
-            { headers: { 'Accept-Language': state.lang === 'ar' ? 'ar' : 'en' } }
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=8&addressdetails=1`,
+            { 
+              headers: { 
+                'Accept-Language': state.lang === 'ar' ? 'ar,en' : 'en,fr,ar'
+              } 
+            }
           );
           if (!response.ok) return;
           const results = await response.json();
           
           // Add international results to dropdown
           results.forEach(result => {
-            // Skip if already in popular cities
-            const cityName = result.display_name.split(',')[0].trim();
+            const parts = result.display_name.split(',').map(s => s.trim());
+            const cityName = parts[0];
+            const country = parts[parts.length - 1];
             const lat = parseFloat(result.lat);
             const lng = parseFloat(result.lon);
             
-            // Check if already shown
-            const alreadyShown = Array.from($$('.city-btn'))
+            // Check if already shown in popular
+            const alreadyShown = Array.from($$('.city-btn:not(.city-btn-intl)'))
               .some(btn => btn.style.display !== 'none' && 
-                          btn.textContent.toLowerCase().includes(cityName.toLowerCase()));
+                          btn.textContent.toLowerCase() === cityName.toLowerCase());
             if (alreadyShown) return;
             
             const btn = document.createElement('button');
             btn.className = 'city-btn city-btn-intl';
-            btn.textContent = `🌍 ${cityName}`;
+            btn.innerHTML = `🌍 ${cityName}<small style="display:block;font-size:0.75em;opacity:0.7">${country}</small>`;
             btn.title = result.display_name;
             btn.dataset.intl = '1';
-            btn.dataset.lat = lat;
-            btn.dataset.lng = lng;
-            btn.dataset.name = cityName;
             
             btn.addEventListener('click', async (e) => {
               e.stopPropagation();
@@ -1610,7 +1612,7 @@ function attachEvents() {
         } catch (err) {
           console.warn('[Search] International search failed:', err);
         }
-      }, 400); // 400ms debounce
+      }, 300); // 300ms debounce (faster)
     }
   });
   
