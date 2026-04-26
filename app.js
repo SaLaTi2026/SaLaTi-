@@ -12,6 +12,13 @@ const HIJRI_MONTHS_AR = [
   'رمضان', 'شوال', 'ذو القعدة', 'ذو الحجة'
 ];
 
+// Coordonnées de la Kaaba (Mecque)
+const KAABA = {
+  lat: 21.4225,
+  lng: 39.8262
+};
+
+
 // ============ TRADUCTIONS ============
 const I18N = {
   fr: {
