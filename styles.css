@@ -1340,18 +1340,15 @@ html[dir="rtl"] .dua-arabic {
 
 /* ========== CITIES DROPDOWN ========== */
 .cities-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid var(--emerald-300);
-  border-top: none;
-  border-radius: 0 0 12px 12px;
-  max-height: 400px;
+  position: relative;
+  margin-top: 8px;
+  background: var(--paper);
+  border: 2px solid var(--emerald-400);
+  border-radius: 12px;
+  max-height: 300px;
   overflow-y: auto;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 1000;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .cities-dropdown.hidden {
@@ -1371,7 +1368,7 @@ html[dir="rtl"] .dua-arabic {
   border-bottom: 1px solid var(--emerald-100);
   text-align: left;
   cursor: pointer;
-  color: var(--text-900);
+  color: var(--ink);
   font-size: 14px;
   transition: background 0.2s;
 }

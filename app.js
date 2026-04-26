@@ -1613,17 +1613,20 @@ function attachEvents() {
     const query = e.target.value.trim().toLowerCase();
     const dropdown = $('#citiesDropdown');
     
+    // ALWAYS show dropdown when input has focus
+    dropdown.classList.remove('hidden');
+    
     if (query.length === 0) {
       // Show all popular cities
       $$('.city-btn').forEach((btn, idx) => {
         btn.style.display = 'block';
         const city = POPULAR_CITIES_AR[idx];
-        btn.textContent = state.lang === 'ar' ? city.ar : city.en;
-        btn.dataset.intl = '';
+        if (city) {
+          btn.textContent = state.lang === 'ar' ? city.ar : city.en;
+        }
       });
       // Remove any international results
       $$('.city-btn-intl').forEach(btn => btn.remove());
-      dropdown.classList.remove('hidden');
       return;
     }
     
