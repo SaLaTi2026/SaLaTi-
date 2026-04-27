@@ -1,0 +1,39 @@
+{
+  "androidPackageId": "com.salati2026.salati",
+  "androidVersionCode": 1,
+  "androidVersionName": "1.0.0",
+  "androidMinSdkVersion": 21,
+  "androidTargetSdkVersion": 33,
+  "androidCompileSdkVersion": 33,
+  
+  "signingKeyAlias": "salati-key",
+  "signingKeyPassword": "",
+  "signingStorePassword": "",
+  
+  "displayMode": "standalone",
+  "orientation": "portrait",
+  "statusBarColor": "#0a4d3a",
+  "navigationBarColor": "#0a4d3a",
+  "navigationBarColorDark": "#062d23",
+  
+  "splashScreenFadeOutDuration": 300,
+  "splashScreenBackgroundColor": "#0a4d3a",
+  
+  "preferredStartUrl": "/",
+  "enableNotifications": true,
+  "enableScreenshots": true,
+  "enableShortcuts": true,
+  
+  "appCategory": "CATEGORY_LIFESTYLE",
+  "appRating": "RATING_4PLUS",
+  
+  "permissions": [
+    "ACCESS_FINE_LOCATION",
+    "ACCESS_COARSE_LOCATION"
+  ],
+  
+  "features": [
+    "android.hardware.location",
+    "android.hardware.location.gps"
+  ]
+}

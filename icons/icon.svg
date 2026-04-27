@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192" height="192" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond vert émeraude -->
+  <rect width="192" height="192" fill="#0a4d3a"/>
+  
+  <!-- Mosquée stylisée -->
+  <g fill="#d4af37">
+    <!-- Dome -->
+    <circle cx="96" cy="60" r="35"/>
+    
+    <!-- Minaret -->
+    <rect x="130" y="80" width="12" height="50" fill="#d4af37"/>
+    <circle cx="136" cy="75" r="8" fill="#d4af37"/>
+    
+    <!-- Base -->
+    <rect x="40" y="110" width="112" height="50" fill="#d4af37" opacity="0.8"/>
+    
+    <!-- Arcs -->
+    <path d="M 60 110 Q 60 90 80 90" stroke="#d4af37" stroke-width="4" fill="none"/>
+    <path d="M 112 110 Q 112 90 132 90" stroke="#d4af37" stroke-width="4" fill="none"/>
+  </g>
+</svg>
