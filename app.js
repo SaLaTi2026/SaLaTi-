@@ -744,6 +744,64 @@ function haversineKm(lat1, lng1, lat2, lng2) {
 
 // ============ HEURES DE PRIÈRE ============
 async function fetchPrayerTimes(lat, lng, date = new Date()) {
+  // PREMIÈRE SOURCE: PrayTimes.js local (toujours disponible, précis)
+  if (window.PrayTimes) {
+    try {
+      const tz = -date.getTimezoneOffset() / 60;
+      const methodMap = {
+        0: 'MWL',      // Muslim World League
+        1: 'ISNA',     // Islamic Society of North America
+        2: 'Egypt',    // Egyptian General Authority of Survey
+        3: 'Makkah',   // Umm Al-Qura University, Makkah
+        4: 'Karachi',  // University of Islamic Sciences, Karachi
+        5: 'Tehran',   // Institute of Geophysics, University of Tehran
+        6: 'Jafari'    // Shia Ithna-Ashari, Qom
+      };
+      const method = methodMap[state.method] || 'MWL';
+      
+      const times = window.PrayTimes.calculate({
+        latitude: lat,
+        longitude: lng,
+        timezone: tz,
+        date: date,
+        method: method,
+        asr: 'Standard'
+      });
+      
+      // Convert to AlAdhan format for compatibility
+      return {
+        timings: {
+          Imsak: times.imsak,
+          Fajr: times.fajr,
+          Sunrise: times.sunrise,
+          Dhuhr: times.dhuhr,
+          Asr: times.asr,
+          Maghrib: times.maghrib,
+          Isha: times.isha,
+          Midnight: times.midnight
+        },
+        date: {
+          readable: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+          timestamp: Math.floor(date.getTime() / 1000)
+        },
+        meta: {
+          latitude: lat,
+          longitude: lng,
+          method: method,
+          offset_imsak_minutes: 0,
+          offset_fajr_minutes: 0,
+          offset_dhuhr_minutes: 0,
+          offset_asr_minutes: 0,
+          offset_maghrib_minutes: 0,
+          offset_isha_minutes: 0
+        }
+      };
+    } catch (err) {
+      console.warn('[PrayTimes] Local calculation failed, trying API:', err);
+    }
+  }
+  
+  // DEUXIÈME SOURCE: API AlAdhan (si internet disponible)
   const d = date.getDate();
   const m = date.getMonth() + 1;
   const y = date.getFullYear();
@@ -753,10 +811,11 @@ async function fetchPrayerTimes(lat, lng, date = new Date()) {
     const r = await fetch(url);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const data = await r.json();
+    console.log('[Prayer Times] Using API AlAdhan');
     return data.data;
   } catch (e) {
-    console.error('Prayer API error:', e);
-    // Fallback: calcul local simplifié
+    console.error('[Prayer Times] API error, using local fallback:', e);
+    // TROISIÈME SOURCE: Fallback local basique
     return calculateLocalPrayerTimes(lat, lng, date);
   }
 }
